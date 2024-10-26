@@ -49,6 +49,26 @@ public class Mine {
         return province_id;
     }
 
+    public void setMine_id(int mine_id) {
+        this.mine_id = mine_id;
+    }
+
+    public void setMine_name(String mine_name) {
+        this.mine_name = mine_name;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public void setProvince_id(int province_id) {
+        this.province_id = province_id;
+    }
+
     @Override
     public String toString() {
         return "Mine{" +
