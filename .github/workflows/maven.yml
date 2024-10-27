@@ -1,4 +1,4 @@
-name: Misight Server
+name: Misight API
 
 on:
   push:
@@ -11,6 +11,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - name: Checkout code
@@ -30,14 +45,35 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL..."
+            sleep 5
+          done
+
+      - name: Set up database
+        env:
+          SPRING_DATASOURCE_URL: "jdbc:postgresql://localhost:5432/testdb"
+          SPRING_DATASOURCE_USERNAME: "postgres"
+          SPRING_DATASOURCE_PASSWORD: "password"
+        run: |
+          echo "Database ready for connection."
+
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
       - name: Run tests
+        env:
+          SPRING_DATASOURCE_URL: "jdbc:postgresql://localhost:5432/testdb"
+          SPRING_DATASOURCE_USERNAME: "postgres"
+          SPRING_DATASOURCE_PASSWORD: "password"
         run: mvn test
 
+      # Optional: Upload build artifacts
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: app-jar
           path: target/*.jar
+
