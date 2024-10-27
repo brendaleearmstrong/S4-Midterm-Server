@@ -21,6 +21,18 @@ public class MineService {
         return mineRepo.save(mine);
     }
 
+    public Optional<Mine> getMineById(Integer mine_id){
+        return mineRepo.findById(mine_id);
+    }
+
+    public Optional<Mine> findById(Integer mine_id){
+        return mineRepo.findById(mine_id);
+    }
+
+    public void delMine(Integer mine_id){
+        mineRepo.deleteById(mine_id);
+    }
+
     public List<Mine> getAllMines(){
         return mineRepo.findAll();
     }
