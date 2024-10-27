@@ -50,7 +50,6 @@ public class MineController {
     @PutMapping("/mines/{mine_id}")
     public Mine updateMine(@PathVariable("mine_id") Integer mine_id, @RequestBody Map<String, String> body){
         Mine currentMine = mineService.getMineById(mine_id).get();
-        currentMine.setMine_id(Integer.parseInt(body.get("mine_id")));
         currentMine.setMine_name(body.get("mine_name"));
         currentMine.setLocation(body.get("location"));
         currentMine.setCompany(body.get("company"));
