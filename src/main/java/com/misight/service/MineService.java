@@ -36,7 +36,4 @@ public class MineService {
     public List<Mine> getAllMines(){
         return mineRepo.findAll();
     }
-
-    public Optional<Mine> getMineById(Integer mineId) {
-    }
 }
