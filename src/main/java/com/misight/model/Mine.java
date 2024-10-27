@@ -10,15 +10,11 @@ public class Mine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public int mine_id;
+    private int mine_id;
     public String mine_name;
     public String location;
     public String company;
     public int province_id;
-
-    public Mine(){
-
-    }
 
     private Mine(int mineId, String mineName, String location, String company, int provinceId){
 
@@ -27,6 +23,10 @@ public class Mine {
         this.location = location;
         this.company = company;
         this.province_id = provinceId;
+    }
+
+    public Mine(){
+
     }
 
     public int getMine_id() {
@@ -47,6 +47,22 @@ public class Mine {
 
     public int getProvince_id() {
         return province_id;
+    }
+
+    public void setMine_name(String mine_name) {
+        this.mine_name = mine_name;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public void setProvince_id(int province_id) {
+        this.province_id = province_id;
     }
 
     @Override
