@@ -4,7 +4,6 @@ import com.misight.model.User;
 import com.misight.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +13,7 @@ public class UserService {
     private final UserRepo userRepo;
 
     @Autowired
-    public UserService(UserRepo userRepo){
+    public UserService(UserRepo userRepo) {
         this.userRepo = userRepo;
     }
 
@@ -26,15 +25,19 @@ public class UserService {
         return userRepo.findAll();
     }
 
-    public Optional<User> getUserById(Integer user_id) {
-        return userRepo.findById(user_id);
+    public Optional<User> getUserById(Integer id) {
+        return userRepo.findById(id);
     }
 
-    public Object findById(Integer user_id) {
-        return userRepo.findById(user_id);
+    public void deluser(Integer id) {
+        userRepo.deleteById(id);
     }
 
-    public void deluser(Integer user_id) {
-        userRepo.deleteById(user_id);
+    public Optional<User> findByUsername(String username) {
+        return userRepo.findByUsername(username);
+    }
+
+    public Optional<User> findById(Integer id) {
+        return userRepo.findById(id);
     }
 }

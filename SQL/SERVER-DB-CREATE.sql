@@ -1,3 +1,23 @@
+-- Create enum type for user roles 
+DO $$ 
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'userrole') THEN
+        CREATE TYPE userrole AS ENUM ('ADMIN', 'MINE_ADMIN', 'USER');
+    END IF;
+END
+$$;
+
+-- Drop users table if it exists
+DROP TABLE IF EXISTS users CASCADE;
+
+-- Create users table
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role userrole NOT NULL
+);
+
 CREATE TABLE provinces (
     province_id SERIAL PRIMARY KEY,
     province_name VARCHAR(255) NOT NULL
