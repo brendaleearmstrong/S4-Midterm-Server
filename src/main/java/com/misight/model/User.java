@@ -42,21 +42,21 @@ public class User {
         return username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public void setPassword(String password) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         this.password = encoder.encode(password);
+    }
+
+    public UserRole getRole() {
+        return role;
     }
 
     public void setRole(UserRole role) {

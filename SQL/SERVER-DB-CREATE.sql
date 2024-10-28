@@ -1,29 +1,28 @@
--- Step 1: Drop existing tables to remove all data
-DROP TABLE IF EXISTS monthly_production CASCADE;
-DROP TABLE IF EXISTS yearly_production CASCADE;
-DROP TABLE IF EXISTS safety_data CASCADE;
-DROP TABLE IF EXISTS environmental_data CASCADE;
-DROP TABLE IF EXISTS monitoring_stations CASCADE;
-DROP TABLE IF EXISTS pollutants CASCADE;
-DROP TABLE IF EXISTS mine_minerals CASCADE;
-DROP TABLE IF EXISTS mines CASCADE;
-DROP TABLE IF EXISTS minerals CASCADE;
-DROP TABLE IF EXISTS provinces CASCADE;
-DROP TABLE IF EXISTS exploration_projects CASCADE;
-
--- Step 2: Create provinces table
 CREATE TABLE provinces (
     province_id SERIAL PRIMARY KEY,
     province_name VARCHAR(255) NOT NULL
 );
 
--- Step 3: Create minerals table
 CREATE TABLE minerals (
     mineral_id SERIAL PRIMARY KEY,
     mineral_name VARCHAR(255) NOT NULL
 );
 
--- Step 4: Create mines table
+CREATE TABLE monitoring_stations (
+    station_id SERIAL PRIMARY KEY,
+    station_name VARCHAR(255) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    province_id INT,
+    FOREIGN KEY (province_id) REFERENCES provinces(province_id)
+);
+
+CREATE TABLE pollutants (
+    pollutant_id SERIAL PRIMARY KEY,
+    pollutant_name VARCHAR(255) NOT NULL,
+    unit VARCHAR(50) NOT NULL,
+    description TEXT
+);
+
 CREATE TABLE mines (
     mine_id SERIAL PRIMARY KEY,
     mine_name VARCHAR(255) NOT NULL,
@@ -33,17 +32,6 @@ CREATE TABLE mines (
     FOREIGN KEY (province_id) REFERENCES provinces(province_id)
 );
 
-
--- Step 12: Create mine_minerals junction table
-CREATE TABLE mine_minerals (
-    mine_id INT,
-    mineral_id INT,
-    PRIMARY KEY (mine_id, mineral_id),
-    FOREIGN KEY (mine_id) REFERENCES mines(mine_id) ON DELETE CASCADE,
-    FOREIGN KEY (mineral_id) REFERENCES minerals(mineral_id) ON DELETE CASCADE
-);
-
--- Step 5: Create exploration_projects table
 CREATE TABLE exploration_projects (
     project_id SERIAL PRIMARY KEY,
     project_name VARCHAR(255) NOT NULL,
@@ -54,24 +42,6 @@ CREATE TABLE exploration_projects (
     FOREIGN KEY (mine_id) REFERENCES mines(mine_id)
 );
 
--- Step 6: Create monitoring_stations table
-CREATE TABLE monitoring_stations (
-    station_id SERIAL PRIMARY KEY,
-    station_name VARCHAR(255) NOT NULL,
-    location VARCHAR(255) NOT NULL,
-    province_id INT,
-    FOREIGN KEY (province_id) REFERENCES provinces(province_id)
-);
-
--- Step 7: Create pollutants table
-CREATE TABLE pollutants (
-    pollutant_id SERIAL PRIMARY KEY,
-    pollutant_name VARCHAR(255) NOT NULL,
-    unit VARCHAR(50) NOT NULL,
-    description TEXT
-);
-
--- Step 8: Create environmental_data table
 CREATE TABLE environmental_data (
     data_id SERIAL PRIMARY KEY,
     station_id INT,
@@ -82,7 +52,6 @@ CREATE TABLE environmental_data (
     FOREIGN KEY (pollutant_id) REFERENCES pollutants(pollutant_id)
 );
 
--- Step 9: Create safety_data table
 CREATE TABLE safety_data (
     safety_id SERIAL PRIMARY KEY,
     mine_id INT,
@@ -92,7 +61,6 @@ CREATE TABLE safety_data (
     FOREIGN KEY (mine_id) REFERENCES mines(mine_id)
 );
 
--- Step 10: Create monthly_production table
 CREATE TABLE monthly_production (
     production_id SERIAL PRIMARY KEY,
     project_id INT,
@@ -107,7 +75,6 @@ CREATE TABLE monthly_production (
     FOREIGN KEY (mineral_id) REFERENCES minerals(mineral_id)
 );
 
--- Step 11: Create yearly_production table
 CREATE TABLE yearly_production (
     yearly_production_id SERIAL PRIMARY KEY,
     project_id INT,
@@ -120,5 +87,3 @@ CREATE TABLE yearly_production (
     FOREIGN KEY (project_id) REFERENCES exploration_projects(project_id),
     FOREIGN KEY (mineral_id) REFERENCES minerals(mineral_id)
 );
-
-
