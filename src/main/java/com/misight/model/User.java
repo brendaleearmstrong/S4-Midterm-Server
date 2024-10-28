@@ -1,7 +1,6 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Entity
 @Table(name = "users")
@@ -17,10 +16,10 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false)
     private UserRole role;
 
-    public enum UserRole {
+    public static enum UserRole {
         ADMIN,
         MINE_ADMIN,
         USER
@@ -30,7 +29,7 @@ public class User {
 
     public User(String username, String password, UserRole role) {
         this.username = username;
-        setPassword(password);
+        this.password = password;
         this.role = role;
     }
 
@@ -51,8 +50,7 @@ public class User {
     }
 
     public void setPassword(String password) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        this.password = encoder.encode(password);
+        this.password = password;
     }
 
     public UserRole getRole() {
@@ -63,9 +61,9 @@ public class User {
         this.role = role;
     }
 
+    // Add basic password verification
     public boolean verifyPassword(String rawPassword) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.matches(rawPassword, this.password);
+        return this.password.equals(rawPassword);
     }
 
     @Override
