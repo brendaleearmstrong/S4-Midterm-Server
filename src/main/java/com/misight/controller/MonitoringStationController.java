@@ -32,34 +32,39 @@ public class MonitoringStationController {
         return stationService.getAllStations();
     }
 
-    @GetMapping("/{station_id}")
-    public Optional<MonitoringStation> getStationById(@PathVariable("station_id") Integer station_id) {
-        return stationService.getStationById(station_id);
+    @GetMapping("/{stationId}")
+    public ResponseEntity<MonitoringStation> getStationById(@PathVariable Integer stationId) {
+        return stationService.getStationById(stationId)
+                .map(station -> new ResponseEntity<>(station, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/province/{province_id}")
-    public List<MonitoringStation> getStationsByProvince(@PathVariable("province_id") Integer province_id) {
-        return stationService.getStationsByProvince(province_id);
+    @GetMapping("/province/{provinceId}")
+    public List<MonitoringStation> getStationsByProvince(@PathVariable Integer provinceId) {
+        return stationService.getStationsByProvince(provinceId);
     }
 
-    @DeleteMapping("/{station_id}")
-    public boolean deleteStation(@PathVariable("station_id") Integer station_id) {
-        if (!stationService.findById(station_id).equals(Optional.empty())) {
-            stationService.delStation(station_id);
-            return true;
+    @PutMapping("/{stationId}")
+    public ResponseEntity<MonitoringStation> updateStation(
+            @PathVariable Integer stationId,
+            @RequestBody MonitoringStation updatedStation) {
+        return stationService.getStationById(stationId)
+                .map(currentStation -> {
+                    currentStation.setStationName(updatedStation.getStationName());
+                    currentStation.setLocation(updatedStation.getLocation());
+                    currentStation.setProvince(updatedStation.getProvince());
+                    MonitoringStation saved = stationService.addStation(currentStation);
+                    return new ResponseEntity<>(saved, HttpStatus.OK);
+                })
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping("/{stationId}")
+    public ResponseEntity<Void> deleteStation(@PathVariable Integer stationId) {
+        if (stationService.getStationById(stationId).isPresent()) {
+            stationService.deleteStation(stationId);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return false;
-    }
-
-    @PutMapping("/{station_id}")
-    public MonitoringStation updateStation(@PathVariable("station_id") Integer station_id,
-                                           @RequestBody Map<String, String> body) {
-        MonitoringStation currentStation = stationService.getStationById(station_id).get();
-        currentStation.setStation_name(body.get("station_name"));
-        currentStation.setLocation(body.get("location"));
-        currentStation.setProvince_id(Integer.parseInt(body.get("province_id")));
-
-        stationService.addStation(currentStation);
-        return currentStation;
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

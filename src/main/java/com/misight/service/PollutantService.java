@@ -4,17 +4,15 @@ import com.misight.model.Pollutant;
 import com.misight.repository.PollutantRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class PollutantService {
-    private final PollutantRepo pollutantRepo;
 
     @Autowired
-    public PollutantService(PollutantRepo pollutantRepo) {
-        this.pollutantRepo = pollutantRepo;
-    }
+    private PollutantRepo pollutantRepo;
 
     public Pollutant addPollutant(Pollutant pollutant) {
         return pollutantRepo.save(pollutant);
@@ -24,19 +22,20 @@ public class PollutantService {
         return pollutantRepo.findAll();
     }
 
-    public Optional<Pollutant> getPollutantById(Integer pollutant_id) {
-        return pollutantRepo.findById(pollutant_id);
+    public Optional<Pollutant> getPollutantById(int id) {
+        return pollutantRepo.findById(id);
     }
 
-    public Optional<Pollutant> findById(Integer pollutant_id) {
-        return pollutantRepo.findById(pollutant_id);
+    public Pollutant updatePollutant(int id, Pollutant updatedPollutant) {
+        return pollutantRepo.findById(id).map(pollutant -> {
+            pollutant.setPollutantName(updatedPollutant.getPollutantName());
+            pollutant.setUnit(updatedPollutant.getUnit());
+            pollutant.setDescription(updatedPollutant.getDescription());
+            return pollutantRepo.save(pollutant);
+        }).orElseThrow(() -> new RuntimeException("Pollutant not found"));
     }
 
-    public void delPollutant(Integer pollutant_id) {
-        pollutantRepo.deleteById(pollutant_id);
-    }
-
-    public Optional<Pollutant> findByPollutantName(String pollutant_name) {
-        return pollutantRepo.findByPollutantName(pollutant_name);
+    public void deletePollutant(int id) {
+        pollutantRepo.deleteById(id);
     }
 }

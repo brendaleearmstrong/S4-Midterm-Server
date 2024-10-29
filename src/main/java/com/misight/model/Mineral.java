@@ -1,41 +1,64 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "minerals")
 public class Mineral {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer mineral_id;
-    public String mineral_name;
+    @Column(name = "mineral_id")
+    private int mineralId;
 
-    public Mineral(Integer mineral_id, String mineral_name){
-        this.mineral_id = mineral_id;
-        this.mineral_name = mineral_name;
+    @Column(name = "mineral_name", nullable = false)
+    private String mineralName;
+
+    @ManyToMany(mappedBy = "minerals")
+    private Set<Mine> mines = new HashSet<>();
+
+    public Mineral() {}
+
+    public Mineral(String mineralName) {
+        this.mineralName = mineralName;
     }
 
-    public Mineral(){
-
+    public int getMineralId() {
+        return mineralId;
     }
 
-    public Integer getMineral_id() {
-        return mineral_id;
+    public String getMineralName() {
+        return mineralName;
     }
 
-    public String getMineral_name() {
-        return mineral_name;
+    public void setMineralName(String mineralName) {
+        this.mineralName = mineralName;
     }
 
-    public void setMineral_name(String mineral_name) {
-        this.mineral_name = mineral_name;
+    public Set<Mine> getMines() {
+        return mines;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Mineral)) return false;
+        Mineral mineral = (Mineral) o;
+        return mineralId == mineral.mineralId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mineralId);
     }
 
     @Override
     public String toString() {
         return "Mineral{" +
-                "mineral_id=" + mineral_id +
-                ", mineral_name='" + mineral_name + '\'' +
+                "mineralId=" + mineralId +
+                ", mineralName='" + mineralName + '\'' +
                 '}';
     }
 }

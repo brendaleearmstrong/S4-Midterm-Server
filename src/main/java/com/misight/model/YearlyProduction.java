@@ -1,9 +1,9 @@
-// File: src/main/java/com/misight/model/YearlyProduction.java
 package com.misight.model;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Year;
+import java.util.Objects;
 
 @Entity
 @Table(name = "yearly_production")
@@ -47,5 +47,18 @@ public class YearlyProduction {
                 ", annual_output=" + annual_output +
                 ", annual_target=" + annual_target +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof YearlyProduction)) return false;
+        YearlyProduction that = (YearlyProduction) o;
+        return Objects.equals(production_id, that.production_id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(production_id);
     }
 }

@@ -1,13 +1,16 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int user_id;
+    private int userId;
 
     @Column(unique = true, nullable = false)
     private String username;
@@ -16,14 +19,15 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
     private UserRole role;
 
-    public static enum UserRole {
-        ADMIN,
-        MINE_ADMIN,
-        USER
-    }
+    @ManyToMany
+    @JoinTable(
+            name = "user_privileges",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "privilege_id")
+    )
+    private Set<Privilege> privileges = new HashSet<>();
 
     public User() {}
 
@@ -33,8 +37,8 @@ public class User {
         this.role = role;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
     public String getUsername() {
@@ -61,17 +65,22 @@ public class User {
         this.role = role;
     }
 
-    // Add basic password verification
+    public Set<Privilege> getPrivileges() {
+        return privileges;
+    }
+
     public boolean verifyPassword(String rawPassword) {
         return this.password.equals(rawPassword);
     }
 
     @Override
-    public String toString() {
-        return "User{" +
-                "user_id=" + user_id +
-                ", username='" + username + '\'' +
-                ", role=" + role +
-                '}';
+    public int hashCode() {
+        return Objects.hash(userId);
+    }
+
+    public enum UserRole {
+        ADMIN,
+        MINE_ADMIN,
+        USER
     }
 }

@@ -6,39 +6,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/exploration-projects")
+@RequestMapping("/api/explorationProjects")
 public class ExplorationProjectController {
 
-    private final ExplorationProjectService projectService;
-
     @Autowired
-    public ExplorationProjectController(ExplorationProjectService projectService) {
-        this.projectService = projectService;
+    private ExplorationProjectService explorationProjectService;
+
+    @GetMapping
+    public List<ExplorationProject> getAllExplorationProjects() {
+        return explorationProjectService.getAllExplorationProjects();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ExplorationProject> getExplorationProjectById(@PathVariable int id) {
+        Optional<ExplorationProject> project = explorationProjectService.getExplorationProjectById(id);
+        return project.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<ExplorationProject> createProject(@RequestBody ExplorationProject project) {
-        ExplorationProject addedProject = projectService.addProject(project);
-        return new ResponseEntity<>(addedProject, HttpStatus.CREATED);
+    public ResponseEntity<ExplorationProject> createExplorationProject(@RequestBody ExplorationProject explorationProject) {
+        ExplorationProject createdProject = explorationProjectService.createExplorationProject(explorationProject);
+        return new ResponseEntity<>(createdProject, HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public List<ExplorationProject> getAllProjects() {
-        return projectService.getAllProjects();
+    @PutMapping("/{id}")
+    public ResponseEntity<ExplorationProject> updateExplorationProject(@PathVariable int id, @RequestBody ExplorationProject updatedProject) {
+        ExplorationProject updated = explorationProjectService.updateExplorationProject(id, updatedProject);
+        if (updated != null) {
+            return ResponseEntity.ok(updated);
+        }
+        return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/{project_id}")
-    public Optional<ExplorationProject> getProjectById(@PathVariable Integer project_id) {
-        return projectService.getProjectById(project_id);
-    }
-
-    @DeleteMapping("/{project_id}")
-    public ResponseEntity<Void> deleteProject(@PathVariable Integer project_id) {
-        projectService.deleteProject(project_id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteExplorationProject(@PathVariable int id) {
+        if (explorationProjectService.deleteExplorationProject(id)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

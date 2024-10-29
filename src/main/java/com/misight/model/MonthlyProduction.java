@@ -47,4 +47,17 @@ public class MonthlyProduction {
                 ", target_output=" + target_output +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MonthlyProduction)) return false;
+        MonthlyProduction that = (MonthlyProduction) o;
+        return production_id.equals(that.production_id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * production_id;
+    }
 }

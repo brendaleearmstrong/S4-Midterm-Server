@@ -1,6 +1,7 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -9,74 +10,87 @@ public class ExplorationProject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer project_id;
+    private int projectId;
 
     @Column(nullable = false)
-    private String project_name;
+    private String projectName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mine_id", nullable = false)
+    private Mine mine;
 
     @Column(nullable = false)
-    private String location;
+    private LocalDate startDate;
 
     @Column(nullable = false)
-    private LocalDate start_date;
+    private LocalDate endDate;
 
     @Column(nullable = false)
-    private LocalDate end_date;
+    private BigDecimal budget;
 
-    public ExplorationProject() {
+    public ExplorationProject() {}
+
+    public ExplorationProject(String projectName, Mine mine, LocalDate startDate, LocalDate endDate, BigDecimal budget) {
+        this.projectName = projectName;
+        this.mine = mine;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.budget = budget;
     }
 
-    public ExplorationProject(String project_name, String location, LocalDate start_date, LocalDate end_date) {
-        this.project_name = project_name;
-        this.location = location;
-        this.start_date = start_date;
-        this.end_date = end_date;
+    public int getProjectId() {
+        return projectId;
     }
 
-    public Integer getProject_id() {
-        return project_id;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public String getProject_name() {
-        return project_name;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
-    public String getLocation() {
-        return location;
+    public Mine getMine() {
+        return mine;
     }
 
-    public LocalDate getStart_date() {
-        return start_date;
+    public void setMine(Mine mine) {
+        this.mine = mine;
     }
 
-    public LocalDate getEnd_date() {
-        return end_date;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public void setProject_name(String project_name) {
-        this.project_name = project_name;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
-    public void setStart_date(LocalDate start_date) {
-        this.start_date = start_date;
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
-    public void setEnd_date(LocalDate end_date) {
-        this.end_date = end_date;
+    public BigDecimal getBudget() {
+        return budget;
+    }
+
+    public void setBudget(BigDecimal budget) {
+        this.budget = budget;
     }
 
     @Override
     public String toString() {
         return "ExplorationProject{" +
-                "project_id=" + project_id +
-                ", project_name='" + project_name + '\'' +
-                ", location='" + location + '\'' +
-                ", start_date=" + start_date +
-                ", end_date=" + end_date +
+                "projectId=" + projectId +
+                ", projectName='" + projectName + '\'' +
+                ", mine=" + (mine != null ? mine.getMineName() : "null") +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", budget=" + budget +
                 '}';
     }
 }
