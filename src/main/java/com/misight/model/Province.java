@@ -5,36 +5,50 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "provinces")
 public class Province {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int province_id;
+    private int provinceId;
 
-    @Column(nullable = false)
-    private String province_name;
+    @Column(nullable = false, name = "province_name")
+    private String provinceName;
 
     public Province() {}
 
-    public Province(String province_name) {
-        this.province_name = province_name;
+    public Province(String provinceName) {
+        this.provinceName = provinceName;
     }
 
-    public int getProvince_id() {
-        return province_id;
+    public int getProvinceId() {
+        return provinceId;
     }
 
-    public String getProvince_name() {
-        return province_name;
+    public String getProvinceName() {
+        return provinceName;
     }
 
-    public void setProvince_name(String province_name) {
-        this.province_name = province_name;
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
     }
 
     @Override
     public String toString() {
         return "Province{" +
-                "province_id=" + province_id +
-                ", province_name='" + province_name + '\'' +
+                "provinceId=" + provinceId +
+                ", provinceName='" + provinceName + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Province)) return false;
+        Province province = (Province) o;
+        return provinceId == province.provinceId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(provinceId);
     }
 }

@@ -26,23 +26,23 @@ public class EnvironmentalDataService {
         return environmentalDataRepo.findAll();
     }
 
-    public Optional<EnvironmentalData> getEnvironmentalDataById(Integer data_id) {
-        return environmentalDataRepo.findById(data_id);
+    public Optional<EnvironmentalData> getEnvironmentalDataById(Integer dataId) {
+        return environmentalDataRepo.findById(dataId);
     }
 
     public List<EnvironmentalData> getEnvironmentalDataByDate(LocalDate date) {
-        return environmentalDataRepo.findByDate(date);
+        return environmentalDataRepo.findByDateRecorded(date);
     }
 
-    public List<EnvironmentalData> getEnvironmentalDataByStation(Integer station_id) {
-        return environmentalDataRepo.findByStationId(station_id);
+    public List<EnvironmentalData> getEnvironmentalDataByStation(Integer stationId) {
+        return environmentalDataRepo.findByMonitoringStation_StationId(stationId);
     }
 
-    public List<EnvironmentalData> getEnvironmentalDataByPollutant(Integer pollutant_id) {
-        return environmentalDataRepo.findByPollutantId(pollutant_id);
+    public List<EnvironmentalData> getEnvironmentalDataByPollutant(Integer pollutantId) {
+        return environmentalDataRepo.findByPollutant_PollutantId(pollutantId);
     }
 
-    public void deleteEnvironmentalData(Integer data_id) {
-        environmentalDataRepo.deleteById(data_id);
+    public void deleteEnvironmentalData(Integer dataId) {
+        environmentalDataRepo.deleteById(dataId);
     }
 }

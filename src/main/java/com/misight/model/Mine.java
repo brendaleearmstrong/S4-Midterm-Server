@@ -1,8 +1,8 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "mines")
@@ -10,70 +10,121 @@ public class Mine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int mine_id;
-    public String mine_name;
-    public String location;
-    public String company;
-    public int province_id;
+    @Column(name = "mine_id")
+    private int mineId;
 
-    private Mine(int mineId, String mineName, String location, String company, int provinceId){
+    @Column(name = "mine_name", nullable = false)
+    private String mineName;
 
-        this.mine_id = mineId;
-        this.mine_name = mineName;
+    @Column(nullable = false)
+    private String location;
+
+    @Column(nullable = false)
+    private String company;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "province_id")
+    private Province province;
+
+    @OneToMany(mappedBy = "mine", cascade = CascadeType.ALL)
+    private Set<ExplorationProject> explorationProjects = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "mine_minerals",
+            joinColumns = @JoinColumn(name = "mine_id"),
+            inverseJoinColumns = @JoinColumn(name = "mineral_id")
+    )
+    private Set<Mineral> minerals = new HashSet<>();
+
+    public Mine() {}
+
+    public Mine(String mineName, String location, String company, Province province) {
+        this.mineName = mineName;
         this.location = location;
         this.company = company;
-        this.province_id = provinceId;
+        this.province = province;
     }
 
-    public Mine(){
-
+    public int getMineId() {
+        return mineId;
     }
 
-    public int getMine_id() {
-        return mine_id;
+    public String getMineName() {
+        return mineName;
     }
 
-    public String getMine_name() {
-        return mine_name;
+    public void setMineName(String mineName) {
+        this.mineName = mineName;
     }
 
     public String getLocation() {
         return location;
     }
 
-    public String getCompany() {
-        return company;
-    }
-
-    public int getProvince_id() {
-        return province_id;
-    }
-
-    public void setMine_name(String mine_name) {
-        this.mine_name = mine_name;
-    }
-
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getCompany() {
+        return company;
     }
 
     public void setCompany(String company) {
         this.company = company;
     }
 
-    public void setProvince_id(int province_id) {
-        this.province_id = province_id;
+    public Province getProvince() {
+        return province;
+    }
+
+    public void setProvince(Province province) {
+        this.province = province;
+    }
+
+    public Set<ExplorationProject> getExplorationProjects() {
+        return explorationProjects;
+    }
+
+    public Set<Mineral> getMinerals() {
+        return minerals;
+    }
+
+    public void setMinerals(Set<Mineral> minerals) {
+        this.minerals = minerals;
+    }
+
+    public void addMineral(Mineral mineral) {
+        this.minerals.add(mineral);
+        mineral.getMines().add(this);
+    }
+
+    public void removeMineral(Mineral mineral) {
+        this.minerals.remove(mineral);
+        mineral.getMines().remove(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Mine)) return false;
+        Mine mine = (Mine) o;
+        return mineId == mine.mineId;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * mineId;
     }
 
     @Override
     public String toString() {
         return "Mine{" +
-                "mine_id=" + mine_id +
-                ", mine_name='" + mine_name + '\'' +
+                "mineId=" + mineId +
+                ", mineName='" + mineName + '\'' +
                 ", location='" + location + '\'' +
                 ", company='" + company + '\'' +
-                ", province_id=" + province_id +
+                ", province=" + (province != null ? province.getProvinceName() : "null") +
                 '}';
     }
 }
-

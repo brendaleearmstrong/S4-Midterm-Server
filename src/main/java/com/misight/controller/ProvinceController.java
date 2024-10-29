@@ -6,52 +6,52 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/provinces")
 public class ProvinceController {
 
-    private final ProvinceService provinceService;
-
     @Autowired
-    public ProvinceController(ProvinceService provinceService) {
-        this.provinceService = provinceService;
+    private ProvinceService provinceService;
+
+    @GetMapping
+    public ResponseEntity<List<Province>> getAllProvinces() {
+        List<Province> provinces = provinceService.getAllProvinces();
+        return new ResponseEntity<>(provinces, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Province> getProvinceById(@PathVariable int id) {
+        Province province = provinceService.getProvinceById(id);
+        if (province != null) {
+            return new ResponseEntity<>(province, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping
     public ResponseEntity<Province> createProvince(@RequestBody Province province) {
-        Province addedProvince = provinceService.addProvince(province);
-        return new ResponseEntity<>(addedProvince, HttpStatus.CREATED);
+        Province newProvince = provinceService.createProvince(province);
+        return new ResponseEntity<>(newProvince, HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public List<Province> getProvinces() {
-        return provinceService.getAllProvinces();
-    }
-
-    @GetMapping("/{province_id}")
-    public Optional<Province> getProvinceById(@PathVariable("province_id") Integer province_id) {
-        return provinceService.getProvinceById(province_id);
-    }
-
-    @DeleteMapping("/{province_id}")
-    public boolean deleteProvince(@PathVariable("province_id") Integer province_id) {
-        if (!provinceService.findById(province_id).equals(Optional.empty())) {
-            provinceService.delProvince(province_id);
-            return true;
+    @PutMapping("/{id}")
+    public ResponseEntity<Province> updateProvince(@PathVariable int id, @RequestBody Province provinceDetails) {
+        Province updatedProvince = provinceService.updateProvince(id, provinceDetails);
+        if (updatedProvince != null) {
+            return new ResponseEntity<>(updatedProvince, HttpStatus.OK);
         }
-        return false;
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PutMapping("/{province_id}")
-    public Province updateProvince(@PathVariable("province_id") Integer province_id,
-                                   @RequestBody Map<String, String> body) {
-        Province currentProvince = provinceService.getProvinceById(province_id).get();
-        currentProvince.setProvince_name(body.get("province_name"));
-        provinceService.addProvince(currentProvince);
-        return currentProvince;
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProvince(@PathVariable int id) {
+        boolean isDeleted = provinceService.deleteProvince(id);
+        if (isDeleted) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

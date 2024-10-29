@@ -7,5 +7,5 @@ import java.util.List;
 
 @Repository
 public interface MonitoringStationRepo extends JpaRepository<MonitoringStation, Integer> {
-    List<MonitoringStation> findByProvinceId(Integer province_id);
+    List<MonitoringStation> findByProvinceProvinceId(Integer provinceId);
 }

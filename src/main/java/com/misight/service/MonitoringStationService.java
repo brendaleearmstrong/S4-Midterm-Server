@@ -24,19 +24,15 @@ public class MonitoringStationService {
         return stationRepo.findAll();
     }
 
-    public Optional<MonitoringStation> getStationById(Integer station_id) {
-        return stationRepo.findById(station_id);
+    public Optional<MonitoringStation> getStationById(Integer stationId) {
+        return stationRepo.findById(stationId);
     }
 
-    public List<MonitoringStation> getStationsByProvince(Integer province_id) {
-        return stationRepo.findByProvinceId(province_id);
+    public List<MonitoringStation> getStationsByProvince(Integer provinceId) {
+        return stationRepo.findByProvinceProvinceId(provinceId);
     }
 
-    public void delStation(Integer station_id) {
-        stationRepo.deleteById(station_id);
-    }
-
-    public Optional<MonitoringStation> findById(Integer station_id) {
-        return stationRepo.findById(station_id);
+    public void deleteStation(Integer stationId) {
+        stationRepo.deleteById(stationId);
     }
 }

@@ -32,6 +32,14 @@ CREATE TABLE mines (
     FOREIGN KEY (province_id) REFERENCES provinces(province_id)
 );
 
+CREATE TABLE mine_minerals (
+    mine_id INT,
+    mineral_id INT,
+    FOREIGN KEY (mine_id) REFERENCES mines(mine_id),
+    FOREIGN KEY (mineral_id) REFERENCES minerals(mineral_id),
+    PRIMARY KEY (mine_id, mineral_id)
+);
+
 CREATE TABLE exploration_projects (
     project_id SERIAL PRIMARY KEY,
     project_name VARCHAR(255) NOT NULL,
@@ -86,4 +94,17 @@ CREATE TABLE yearly_production (
     percent_to_goal DECIMAL(5, 2),
     FOREIGN KEY (project_id) REFERENCES exploration_projects(project_id),
     FOREIGN KEY (mineral_id) REFERENCES minerals(mineral_id)
+);
+
+CREATE TABLE privileges (
+    privilege_id SERIAL PRIMARY KEY,
+    privilege_name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE user_privileges (
+    user_id INT,
+    privilege_id INT,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (privilege_id) REFERENCES privileges(privilege_id),
+    PRIMARY KEY (user_id, privilege_id)
 );

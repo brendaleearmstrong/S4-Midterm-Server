@@ -1,49 +1,69 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Table(name = "safety_data")
 public class SafetyData {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer safety_id;
+    private int safetyId;
 
     @Column(nullable = false)
-    private String incident_description;
+    private String safetyLevel;
 
-    @Column(nullable = false)
-    private LocalDate date;
-
-    @Column(nullable = false)
-    private String location;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mine_id", nullable = false)
+    private Mine mine;
 
     public SafetyData() {}
 
-    public SafetyData(String incident_description, LocalDate date, String location) {
-        this.incident_description = incident_description;
-        this.date = date;
-        this.location = location;
+    public SafetyData(String safetyLevel, Mine mine) {
+        this.safetyLevel = safetyLevel;
+        this.mine = mine;
     }
 
-    public Integer getSafety_id() { return safety_id; }
-    public String getIncident_description() { return incident_description; }
-    public LocalDate getDate() { return date; }
-    public String getLocation() { return location; }
+    public int getSafetyId() {
+        return safetyId;
+    }
 
-    public void setIncident_description(String incident_description) { this.incident_description = incident_description; }
-    public void setDate(LocalDate date) { this.date = date; }
-    public void setLocation(String location) { this.location = location; }
+    public String getSafetyLevel() {
+        return safetyLevel;
+    }
+
+    public void setSafetyLevel(String safetyLevel) {
+        this.safetyLevel = safetyLevel;
+    }
+
+    public Mine getMine() {
+        return mine;
+    }
+
+    public void setMine(Mine mine) {
+        this.mine = mine;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SafetyData)) return false;
+        SafetyData that = (SafetyData) o;
+        return safetyId == that.safetyId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(safetyId);
+    }
 
     @Override
     public String toString() {
         return "SafetyData{" +
-                "safety_id=" + safety_id +
-                ", incident_description='" + incident_description + '\'' +
-                ", date=" + date +
-                ", location='" + location + '\'' +
+                "safetyId=" + safetyId +
+                ", safetyLevel='" + safetyLevel + '\'' +
+                ", mine=" + (mine != null ? mine.getMineName() : "null") +
                 '}';
     }
 }
+
