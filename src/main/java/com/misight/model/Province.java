@@ -1,6 +1,8 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "provinces")
@@ -8,10 +10,14 @@ public class Province {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "province_id")
     private int provinceId;
 
     @Column(nullable = false, name = "province_name")
     private String provinceName;
+
+    @OneToMany(mappedBy = "province", cascade = CascadeType.ALL)
+    private Set<Mine> mines = new HashSet<>();
 
     public Province() {}
 
@@ -23,12 +29,24 @@ public class Province {
         return provinceId;
     }
 
+    public void setProvinceId(int provinceId) {
+        this.provinceId = provinceId;
+    }
+
     public String getProvinceName() {
         return provinceName;
     }
 
     public void setProvinceName(String provinceName) {
         this.provinceName = provinceName;
+    }
+
+    public Set<Mine> getMines() {
+        return mines;
+    }
+
+    public void setMines(Set<Mine> mines) {
+        this.mines = mines;
     }
 
     @Override

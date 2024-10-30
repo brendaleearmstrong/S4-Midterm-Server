@@ -1,6 +1,7 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -8,6 +9,7 @@ import java.util.Set;
 @Entity
 @Table(name = "minerals")
 public class Mineral {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mineral_id")
@@ -19,7 +21,8 @@ public class Mineral {
     @ManyToMany(mappedBy = "minerals")
     private Set<Mine> mines = new HashSet<>();
 
-    public Mineral() {}
+    public Mineral() {
+    }
 
     public Mineral(String mineralName) {
         this.mineralName = mineralName;
@@ -39,6 +42,10 @@ public class Mineral {
 
     public Set<Mine> getMines() {
         return mines;
+    }
+
+    public void setMines(Set<Mine> mines) {
+        this.mines = mines;
     }
 
     @Override
