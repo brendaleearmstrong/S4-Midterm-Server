@@ -1,6 +1,8 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,12 +15,16 @@ public class Mine {
     @Column(name = "mine_id")
     private int mineId;
 
+    @NotBlank(message = "Mine name is required")
+    @Size(min = 2, max = 100, message = "Mine name must be between 2 and 100 characters")
     @Column(name = "mine_name", nullable = false)
     private String mineName;
 
+    @NotBlank(message = "Location is required")
     @Column(nullable = false)
     private String location;
 
+    @NotBlank(message = "Company name is required")
     @Column(nullable = false)
     private String company;
 
@@ -37,6 +43,7 @@ public class Mine {
     )
     private Set<Mineral> minerals = new HashSet<>();
 
+    // Constructors
     public Mine() {}
 
     public Mine(String mineName, String location, String company, Province province) {
@@ -46,6 +53,7 @@ public class Mine {
         this.province = province;
     }
 
+    // Getters and Setters
     public int getMineId() {
         return mineId;
     }
@@ -94,6 +102,7 @@ public class Mine {
         this.minerals = minerals;
     }
 
+    // Helper methods
     public void addMineral(Mineral mineral) {
         this.minerals.add(mineral);
         mineral.getMines().add(this);

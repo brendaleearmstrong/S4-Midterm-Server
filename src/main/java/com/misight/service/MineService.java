@@ -1,12 +1,12 @@
 package com.misight.service;
 
 import com.misight.model.Mine;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 public interface MineService {
+    // Basic CRUD operations
     List<Mine> getAllMines();
     Optional<Mine> getMineById(int id);
     Mine saveMine(Mine mine);
