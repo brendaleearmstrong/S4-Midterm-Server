@@ -1,4 +1,3 @@
-// File: src/main/java/com/misight/controller/UserController.java
 package com.misight.controller;
 
 import com.misight.model.User;
@@ -21,6 +20,18 @@ public class UserController {
         this.userService = userService;
     }
 
+    // Added simple POST endpoint for direct user creation
+    @PostMapping
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        try {
+            User savedUser = userService.registerUser(user);
+            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        }
+    }
+
+    // Kept original registration endpoint
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
         try {
@@ -32,42 +43,58 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<User>> getUsers() {
+        try {
+            List<User> users = userService.getAllUsers();
+            return new ResponseEntity<>(users, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{user_id}")
-    public Optional<User> getUserById(@PathVariable("user_id") Integer user_id) {
-        return userService.getUserById(user_id);
+    public ResponseEntity<User> getUserById(@PathVariable("user_id") Integer user_id) {
+        Optional<User> userData = userService.getUserById(user_id);
+        return userData.map(user -> new ResponseEntity<>(user, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PutMapping("/{user_id}")
     public ResponseEntity<User> updateUser(@PathVariable("user_id") Integer user_id,
                                            @RequestBody User user) {
         try {
-            User currentUser = userService.getUserById(user_id).get();
-            currentUser.setUsername(user.getUsername());
-            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-                currentUser.setPassword(user.getPassword());
-            }
-            if (user.getRole() != null) {
-                currentUser.setRole(user.getRole());
-            }
+            Optional<User> userData = userService.getUserById(user_id);
+            if (userData.isPresent()) {
+                User currentUser = userData.get();
+                currentUser.setUsername(user.getUsername());
+                if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+                    currentUser.setPassword(user.getPassword());
+                }
+                if (user.getRole() != null) {
+                    currentUser.setRole(user.getRole());
+                }
 
-            userService.registerUser(currentUser);
-            return new ResponseEntity<>(currentUser, HttpStatus.OK);
+                User updatedUser = userService.registerUser(currentUser);
+                return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @DeleteMapping("/{user_id}")
-    public boolean deleteUser(@PathVariable("user_id") Integer user_id) {
-        if (!userService.findById(user_id).equals(Optional.empty())) {
-            userService.deluser(user_id);
-            return true;
+    public ResponseEntity<HttpStatus> deleteUser(@PathVariable("user_id") Integer user_id) {
+        try {
+            Optional<User> user = userService.findById(user_id);
+            if (user.isPresent()) {
+                userService.deluser(user_id);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return false;
     }
 
     @PostMapping("/login")
