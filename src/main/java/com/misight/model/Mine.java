@@ -1,31 +1,36 @@
 package com.misight.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
 @Table(name = "mines")
 public class Mine {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mine_id")
+    @JsonProperty("mine_id")
     private int mineId;
 
     @NotBlank(message = "Mine name is required")
     @Size(min = 2, max = 100, message = "Mine name must be between 2 and 100 characters")
     @Column(name = "mine_name", nullable = false)
+    @JsonProperty("mine_name")
     private String mineName;
 
     @NotBlank(message = "Location is required")
     @Column(nullable = false)
+    @JsonProperty("location")
     private String location;
 
     @NotBlank(message = "Company name is required")
     @Column(nullable = false)
+    @JsonProperty("company")
     private String company;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -84,6 +89,10 @@ public class Mine {
 
     public Province getProvince() {
         return province;
+    }
+
+    public int getProvinceId(){
+        return this.province.getProvinceId();
     }
 
     public void setProvince(Province province) {

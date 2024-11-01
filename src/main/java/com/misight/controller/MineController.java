@@ -1,13 +1,19 @@
 package com.misight.controller;
 
 import com.misight.model.Mine;
+import com.misight.model.MineDTO;
+import com.misight.model.Province;
+import com.misight.repository.ProvinceRepo;
 import com.misight.service.MineService;
+import com.misight.service.MineServiceImpl;
+import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
+import java.lang.reflect.Executable;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +22,10 @@ import java.util.Map;
 public class MineController {
 
     @Autowired
-    private MineService mineService;
+    private MineServiceImpl mineService;
+
+    @Autowired
+    private ProvinceRepo provinceRepo;
 
     @GetMapping
     public ResponseEntity<List<Mine>> getAllMines() {
@@ -31,8 +40,18 @@ public class MineController {
     }
 
     @PostMapping
-    public ResponseEntity<Mine> createMine(@Validated @RequestBody Mine mine) {
+    public ResponseEntity<Mine> createMine(@Validated @RequestBody MineDTO mineDTO) {
         try {
+
+            Province province = provinceRepo.findById(mineDTO.getProvince_id())
+                    .orElseThrow(() -> new ValidationException("Province not found"));
+
+            Mine mine = new Mine();
+            mine.setCompany(mineDTO.getCompany());
+            mine.setLocation(mineDTO.getLocation());
+            mine.setMineName(mineDTO.getMine_name());
+            mine.setProvince(province); // Set the retrieved Province object
+
             Mine savedMine = mineService.saveMine(mine);
             return new ResponseEntity<>(savedMine, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
