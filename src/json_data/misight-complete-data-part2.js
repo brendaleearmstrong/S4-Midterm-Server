@@ -164,24 +164,21 @@ POST   /api/mine-minerals                    - Add mineral to mine
 DELETE /api/mine-minerals/{mineId}/{minId}   - Remove mineral from mine
 
 Data:
-{
-    "mine_minerals": [
-        { "mineId": 1, "mineralId": 7 },  // Voiseys Bay - Nickel
-        { "mineId": 1, "mineralId": 3 },  // Voiseys Bay - Copper
-        { "mineId": 2, "mineralId": 7 },  // Long Harbour - Nickel
-        { "mineId": 3, "mineralId": 4 },  // Scully Mine - Iron Ore
-        { "mineId": 4, "mineralId": 5 },  // Brunswick Mine - Zinc
-        { "mineId": 5, "mineralId": 3 },  // Duck Pond Mine - Copper
-        { "mineId": 6, "mineralId": 1 },  // Pine Cove Mine - Gold
-        { "mineId": 7, "mineralId": 3 },  // Little Deer Mine - Copper
-        { "mineId": 8, "mineralId": 1 },  // Hammerdown Mine - Gold
-        { "mineId": 9, "mineralId": 4 },  // Labrador Iron Mines - Iron Ore
-        { "mineId": 10, "mineralId": 1 }, // Stoger Tight Mine - Gold
-        { "mineId": 11, "mineralId": 4 }, // Kami Project - Iron Ore
-        { "mineId": 12, "mineralId": 3 }, // Gullbridge Mine - Copper
-        { "mineId": 13, "mineralId": 4 }, // Red Moon Potash - Iron Ore
-        { "mineId": 14, "mineralId": 2 }, // Crown Pillar Mine - Silver
-        { "mineId": 15, "mineralId": 1 }  // Sunnyside Mine - Gold
-    ]
-}
+POST http://localhost:8080/api/mine-minerals?mineId=1&mineralId=7
+POST http://localhost:8080/api/mine-minerals?mineId=1&mineralId=3
+POST http://localhost:8080/api/mine-minerals?mineId=2&mineralId=7
+POST http://localhost:8080/api/mine-minerals?mineId=3&mineralId=4
+POST http://localhost:8080/api/mine-minerals?mineId=4&mineralId=5
+POST http://localhost:8080/api/mine-minerals?mineId=5&mineralId=3
+POST http://localhost:8080/api/mine-minerals?mineId=6&mineralId=1
+POST http://localhost:8080/api/mine-minerals?mineId=7&mineralId=3
+POST http://localhost:8080/api/mine-minerals?mineId=8&mineralId=1
+POST http://localhost:8080/api/mine-minerals?mineId=9&mineralId=4
+POST http://localhost:8080/api/mine-minerals?mineId=10&mineralId=1
+POST http://localhost:8080/api/mine-minerals?mineId=11&mineralId=4
+POST http://localhost:8080/api/mine-minerals?mineId=12&mineralId=3
+POST http://localhost:8080/api/mine-minerals?mineId=13&mineralId=4
+POST http://localhost:8080/api/mine-minerals?mineId=14&mineralId=2
+POST http://localhost:8080/api/mine-minerals?mineId=15&mineralId=1
+
 */

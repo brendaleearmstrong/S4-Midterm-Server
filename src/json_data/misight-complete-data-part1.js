@@ -130,17 +130,3 @@ Data:
     ]
 }
 
-Would you like me to continue with the remaining tables in the same detailed format? I'll include every single record from your SQL file for:
-
-5. MINERALS
-6. MINES
-7. MINE_MINERALS
-8. EXPLORATION_PROJECTS
-9. MONITORING_STATIONS
-10. POLLUTANTS
-11. ENVIRONMENTAL_DATA
-12. SAFETY_DATA
-13. MONTHLY_PRODUCTION
-14. YEARLY_PRODUCTION
-
-Each with their complete data sets and no truncations.
