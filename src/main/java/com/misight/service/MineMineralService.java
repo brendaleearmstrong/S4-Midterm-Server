@@ -1,66 +1,55 @@
 package com.misight.service;
 
 import com.misight.model.Mine;
-import com.misight.model.MineMineral;
 import com.misight.model.Mineral;
+import com.misight.model.MineMineral;
 import com.misight.repository.MineMineralRepo;
-import com.misight.repository.MineRepo;
-import com.misight.repository.MineralRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import java.util.ArrayList;
+
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MineMineralService {
+
+    private final MineService mineService;
+    private final MineralService mineralService;
     private final MineMineralRepo mineMineralRepo;
-    private final MineRepo mineRepo;
-    private final MineralRepo mineralRepo;
 
     @Autowired
-    public MineMineralService(MineMineralRepo mineMineralRepo,
-                              MineRepo mineRepo,
-                              MineralRepo mineralRepo) {
+    public MineMineralService(MineService mineService, MineralService mineralService, MineMineralRepo mineMineralRepo) {
+        this.mineService = mineService;
+        this.mineralService = mineralService;
         this.mineMineralRepo = mineMineralRepo;
-        this.mineRepo = mineRepo;
-        this.mineralRepo = mineralRepo;
     }
 
-    @Transactional
     public MineMineral addMineMineral(int mineId, int mineralId) {
-        Mine mine = mineRepo.findById(mineId)
-                .orElseThrow(() -> new RuntimeException("Mine not found with id: " + mineId));
+        Optional<Mine> mineOptional = mineService.getMineById(mineId);
+        Optional<Mineral> mineralOptional = mineralService.getMineralById(mineralId);
 
-        Mineral mineral = mineralRepo.findById(mineralId)
-                .orElseThrow(() -> new RuntimeException("Mineral not found with id: " + mineralId));
+        if (mineOptional.isEmpty()) {
+            throw new IllegalArgumentException("Mine not found");
+        }
 
-        MineMineral mineMineral = new MineMineral(mine, mineral);
+        if (mineralOptional.isEmpty()) {
+            throw new IllegalArgumentException("Mineral not found");
+        }
+
+        Mine mine = mineOptional.get();
+        Mineral mineral = mineralOptional.get();
+
+        // Check if association already exists
+        if (mineMineralRepo.findByMineAndMineral(mine, mineral).isPresent()) {
+            throw new DataIntegrityViolationException("This mine-mineral combination already exists.");
+        }
+
+        // Create and save new association
+        MineMineral mineMineral = new MineMineral();
+        mineMineral.setMine(mine);
+        mineMineral.setMineral(mineral);
         return mineMineralRepo.save(mineMineral);
-    }
-
-    @Transactional
-    public List<MineMineral> addBulkMineMinerals() {
-        List<MineMineral> savedMineMinerals = new ArrayList<>();
-
-        savedMineMinerals.add(addMineMineral(1, 7));
-        savedMineMinerals.add(addMineMineral(1, 3));
-        savedMineMinerals.add(addMineMineral(2, 7));
-        savedMineMinerals.add(addMineMineral(3, 4));
-        savedMineMinerals.add(addMineMineral(4, 5));
-        savedMineMinerals.add(addMineMineral(5, 3));
-        savedMineMinerals.add(addMineMineral(6, 1));
-        savedMineMinerals.add(addMineMineral(7, 3));
-        savedMineMinerals.add(addMineMineral(8, 1));
-        savedMineMinerals.add(addMineMineral(9, 4));
-        savedMineMinerals.add(addMineMineral(10, 1));
-        savedMineMinerals.add(addMineMineral(11, 4));
-        savedMineMinerals.add(addMineMineral(12, 3));
-        savedMineMinerals.add(addMineMineral(13, 4));
-        savedMineMinerals.add(addMineMineral(14, 2));
-        savedMineMinerals.add(addMineMineral(15, 1));
-
-        return savedMineMinerals;
     }
 
     public List<MineMineral> getAllMineMinerals() {
