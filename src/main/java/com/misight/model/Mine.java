@@ -1,9 +1,12 @@
 package com.misight.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.misight.repository.ProvinceRepo;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -18,19 +21,23 @@ public class Mine {
     @NotBlank(message = "Mine name is required")
     @Size(min = 2, max = 100, message = "Mine name must be between 2 and 100 characters")
     @Column(name = "mine_name", nullable = false)
+    @JsonProperty("mine_name")
     private String mineName;
 
     @NotBlank(message = "Location is required")
     @Column(nullable = false)
+    @JsonProperty("location")
     private String location;
 
     @NotBlank(message = "Company name is required")
     @Column(nullable = false)
+    @JsonProperty("company")
     private String company;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "province_id")
-    private Province province;
+    @JsonProperty("province_id")
+    public Province province;
 
     @OneToMany(mappedBy = "mine", cascade = CascadeType.ALL)
     private Set<ExplorationProject> explorationProjects = new HashSet<>();
@@ -133,7 +140,7 @@ public class Mine {
                 ", mineName='" + mineName + '\'' +
                 ", location='" + location + '\'' +
                 ", company='" + company + '\'' +
-                ", province=" + (province != null ? province.getProvinceName() : "null") +
+                ", province=" + (this.province.getProvinceName() != null ? this.province.getProvinceName() : "null") +
                 '}';
     }
 }

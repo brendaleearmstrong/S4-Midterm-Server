@@ -1,7 +1,9 @@
 package com.misight.service;
 
 import com.misight.model.Mine;
+import com.misight.model.Province;
 import com.misight.repository.MineRepo;
+import com.misight.repository.ProvinceRepo;
 import jakarta.validation.ValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class MineServiceImpl implements MineService {
 
     @Autowired
     private MineRepo mineRepo;
+
+    @Autowired
+    private ProvinceRepo provinceRepo;
 
     @Override
     public List<Mine> getAllMines() {
