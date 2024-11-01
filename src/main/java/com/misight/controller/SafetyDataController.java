@@ -3,11 +3,10 @@ package com.misight.controller;
 import com.misight.model.SafetyData;
 import com.misight.service.SafetyDataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/safety-data")
@@ -20,25 +19,33 @@ public class SafetyDataController {
         this.safetyDataService = safetyDataService;
     }
 
-    @PostMapping
-    public ResponseEntity<SafetyData> createSafetyData(@RequestBody SafetyData safetyData) {
-        SafetyData addedData = safetyDataService.addSafetyData(safetyData);
-        return new ResponseEntity<>(addedData, HttpStatus.CREATED);
-    }
-
     @GetMapping
     public List<SafetyData> getAllSafetyData() {
         return safetyDataService.getAllSafetyData();
     }
 
-    @GetMapping("/{safety_id}")
-    public Optional<SafetyData> getSafetyDataById(@PathVariable Integer safety_id) {
-        return safetyDataService.getSafetyDataById(safety_id);
+    @GetMapping("/{id}")
+    public ResponseEntity<SafetyData> getSafetyDataById(@PathVariable int id) {
+        SafetyData safetyData = safetyDataService.getSafetyDataById(id).orElse(null);
+        if (safetyData == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(safetyData);
     }
 
-    @DeleteMapping("/{safety_id}")
-    public ResponseEntity<Void> deleteSafetyData(@PathVariable Integer safety_id) {
-        safetyDataService.deleteSafetyData(safety_id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @PostMapping
+    public SafetyData createSafetyData(@RequestParam int mineId,
+                                       @RequestParam int lostTimeIncidents,
+                                       @RequestParam int nearMisses) {
+        return safetyDataService.addSafetyData(mineId, lostTimeIncidents, nearMisses);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteSafetyData(@PathVariable int id) {
+        if (safetyDataService.deleteSafetyData(id)) {
+            return ResponseEntity.ok("SafetyData deleted successfully.");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

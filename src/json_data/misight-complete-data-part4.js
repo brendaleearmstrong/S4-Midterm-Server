@@ -1,18 +1,18 @@
-/*
+
 12. SAFETY_DATA
--------------------------
 Description: Safety incident records for each mine
 Primary Key: safety_id
 Foreign Key: mine_id
 
 Endpoints:
-GET    /api/safety-data             - Retrieve all safety records
-GET    /api/safety-data/{id}        - Retrieve specific record
-POST   /api/safety-data             - Create new record
-PUT    /api/safety-data/{id}        - Update record
-DELETE /api/safety-data/{id}        - Delete record
 
-Data:
+GET /api/safety-data - Retrieve all safety records
+GET /api/safety-data/{id} - Retrieve specific record
+POST /api/safety-data - Create new record
+PUT /api/safety-data/{id} - Update record
+DELETE /api/safety-data/{id} - Delete record
+
+/*
 {
     "safety_data": [
         {
@@ -137,6 +137,7 @@ Data:
         }
     ]
 }
+
 
 13. MONTHLY_PRODUCTION
 -------------------------
