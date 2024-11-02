@@ -7,5 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface PollutantRepo extends JpaRepository<Pollutant, Integer> {
-    Optional<Pollutant> findByPollutantName(String pollutant_name);
+    Optional<Pollutant> findByPollutantName(String pollutantName);
 }

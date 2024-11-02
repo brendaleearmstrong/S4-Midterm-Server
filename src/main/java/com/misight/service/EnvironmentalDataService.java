@@ -18,31 +18,43 @@ public class EnvironmentalDataService {
         this.environmentalDataRepo = environmentalDataRepo;
     }
 
-    public EnvironmentalData addEnvironmentalData(EnvironmentalData data) {
-        return environmentalDataRepo.save(data);
-    }
-
     public List<EnvironmentalData> getAllEnvironmentalData() {
         return environmentalDataRepo.findAll();
     }
 
-    public Optional<EnvironmentalData> getEnvironmentalDataById(Integer data_id) {
-        return environmentalDataRepo.findById(data_id);
+    public Optional<EnvironmentalData> getEnvironmentalDataById(Integer dataId) {
+        return environmentalDataRepo.findById(dataId);
+    }
+
+    public EnvironmentalData createEnvironmentalData(EnvironmentalData data) {
+        return environmentalDataRepo.save(data);
+    }
+
+    public Optional<EnvironmentalData> updateEnvironmentalData(Integer id, EnvironmentalData data) {
+        if (environmentalDataRepo.existsById(id)) {
+            data.setDataId(id);
+            return Optional.of(environmentalDataRepo.save(data));
+        }
+        return Optional.empty();
     }
 
     public List<EnvironmentalData> getEnvironmentalDataByDate(LocalDate date) {
         return environmentalDataRepo.findByDate(date);
     }
 
-    public List<EnvironmentalData> getEnvironmentalDataByStation(Integer station_id) {
-        return environmentalDataRepo.findByStationId(station_id);
+    public List<EnvironmentalData> getEnvironmentalDataByStation(Integer stationId) {
+        return environmentalDataRepo.findByStationStationId(stationId);
     }
 
-    public List<EnvironmentalData> getEnvironmentalDataByPollutant(Integer pollutant_id) {
-        return environmentalDataRepo.findByPollutantId(pollutant_id);
+    public List<EnvironmentalData> getEnvironmentalDataByPollutant(Integer pollutantId) {
+        return environmentalDataRepo.findByPollutantPollutantId(pollutantId);
     }
 
-    public void deleteEnvironmentalData(Integer data_id) {
-        environmentalDataRepo.deleteById(data_id);
+    public boolean deleteEnvironmentalData(Integer id) {
+        if (environmentalDataRepo.existsById(id)) {
+            environmentalDataRepo.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

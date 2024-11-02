@@ -1,3 +1,4 @@
+// MonitoringStation.java
 package com.misight.model;
 
 import jakarta.persistence.*;
@@ -7,35 +8,39 @@ import jakarta.persistence.*;
 public class MonitoringStation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int station_id;
+    private int stationId;
 
     @Column(nullable = false)
-    private String station_name;
+    private String stationName;
 
     @Column(nullable = false)
     private String location;
 
     @Column(nullable = false)
-    private int province_id;
+    private int provinceId;
 
     public MonitoringStation() {}
 
-    public MonitoringStation(String station_name, String location, int province_id) {
-        this.station_name = station_name;
+    public MonitoringStation(String stationName, String location, int provinceId) {
+        this.stationName = stationName;
         this.location = location;
-        this.province_id = province_id;
+        this.provinceId = provinceId;
     }
 
-    public int getStation_id() {
-        return station_id;
+    public int getStationId() {
+        return stationId;
     }
 
-    public String getStation_name() {
-        return station_name;
+    public void setStationId(int stationId) {
+        this.stationId = stationId;
     }
 
-    public void setStation_name(String station_name) {
-        this.station_name = station_name;
+    public String getStationName() {
+        return stationName;
+    }
+
+    public void setStationName(String stationName) {
+        this.stationName = stationName;
     }
 
     public String getLocation() {
@@ -46,21 +51,21 @@ public class MonitoringStation {
         this.location = location;
     }
 
-    public int getProvince_id() {
-        return province_id;
+    public int getProvinceId() {
+        return provinceId;
     }
 
-    public void setProvince_id(int province_id) {
-        this.province_id = province_id;
+    public void setProvinceId(int provinceId) {
+        this.provinceId = provinceId;
     }
 
     @Override
     public String toString() {
         return "MonitoringStation{" +
-                "station_id=" + station_id +
-                ", station_name='" + station_name + '\'' +
+                "stationId=" + stationId +
+                ", stationName='" + stationName + '\'' +
                 ", location='" + location + '\'' +
-                ", province_id=" + province_id +
+                ", provinceId=" + provinceId +
                 '}';
     }
 }

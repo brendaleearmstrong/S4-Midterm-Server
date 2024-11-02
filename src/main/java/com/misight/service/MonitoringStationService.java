@@ -29,7 +29,7 @@ public class MonitoringStationService {
     }
 
     public List<MonitoringStation> getStationsByProvince(Integer province_id) {
-        return stationRepo.findByProvinceId(province_id);
+        return stationRepo.findByProvinceId(province_id);  // Ensure this matches the actual column
     }
 
     public void delStation(Integer station_id) {

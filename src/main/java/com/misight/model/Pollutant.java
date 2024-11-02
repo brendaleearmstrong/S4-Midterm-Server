@@ -1,3 +1,4 @@
+// Pollutant.java
 package com.misight.model;
 
 import jakarta.persistence.*;
@@ -7,10 +8,10 @@ import jakarta.persistence.*;
 public class Pollutant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int pollutant_id;
+    private int pollutantId;
 
     @Column(nullable = false)
-    private String pollutant_name;
+    private String pollutantName;
 
     @Column(nullable = false)
     private String unit;
@@ -20,36 +21,38 @@ public class Pollutant {
 
     public Pollutant() {}
 
-    public Pollutant(String pollutant_name, String unit, String description) {
-        this.pollutant_name = pollutant_name;
+    public Pollutant(String pollutantName, String unit, String description) {
+        this.pollutantName = pollutantName;
         this.unit = unit;
         this.description = description;
     }
 
-    // Getters
-    public int getPollutant_id() {
-        return pollutant_id;
+    public int getPollutantId() {
+        return pollutantId;
     }
 
-    public String getPollutant_name() {
-        return pollutant_name;
+    public void setPollutantId(int pollutantId) {
+        this.pollutantId = pollutantId;
+    }
+
+    public String getPollutantName() {
+        return pollutantName;
+    }
+
+    public void setPollutantName(String pollutantName) {
+        this.pollutantName = pollutantName;
     }
 
     public String getUnit() {
         return unit;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    // Setters
-    public void setPollutant_name(String pollutant_name) {
-        this.pollutant_name = pollutant_name;
-    }
-
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {
@@ -59,8 +62,8 @@ public class Pollutant {
     @Override
     public String toString() {
         return "Pollutant{" +
-                "pollutant_id=" + pollutant_id +
-                ", pollutant_name='" + pollutant_name + '\'' +
+                "pollutantId=" + pollutantId +
+                ", pollutantName='" + pollutantName + '\'' +
                 ", unit='" + unit + '\'' +
                 ", description='" + description + '\'' +
                 '}';

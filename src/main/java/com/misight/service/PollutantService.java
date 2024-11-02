@@ -28,15 +28,11 @@ public class PollutantService {
         return pollutantRepo.findById(pollutant_id);
     }
 
-    public Optional<Pollutant> findById(Integer pollutant_id) {
+    public Optional<Pollutant> findById(Integer pollutant_id) {  // Added this method to match usage in controller
         return pollutantRepo.findById(pollutant_id);
     }
 
     public void delPollutant(Integer pollutant_id) {
         pollutantRepo.deleteById(pollutant_id);
-    }
-
-    public Optional<Pollutant> findByPollutantName(String pollutant_name) {
-        return pollutantRepo.findByPollutantName(pollutant_name);
     }
 }

@@ -32,25 +32,25 @@ public class PollutantController {
         return pollutantService.getAllPollutants();
     }
 
-    @GetMapping("/{pollutant_id}")
-    public Optional<Pollutant> getPollutantById(@PathVariable("pollutant_id") Integer pollutant_id) {
-        return pollutantService.getPollutantById(pollutant_id);
+    @GetMapping("/{pollutantId}")
+    public Optional<Pollutant> getPollutantById(@PathVariable("pollutantId") Integer pollutantId) {
+        return pollutantService.getPollutantById(pollutantId);
     }
 
-    @DeleteMapping("/{pollutant_id}")
-    public boolean deletePollutant(@PathVariable("pollutant_id") Integer pollutant_id) {
-        if (!pollutantService.findById(pollutant_id).equals(Optional.empty())) {
-            pollutantService.delPollutant(pollutant_id);
+    @DeleteMapping("/{pollutantId}")
+    public boolean deletePollutant(@PathVariable("pollutantId") Integer pollutantId) {
+        if (!pollutantService.findById(pollutantId).equals(Optional.empty())) {
+            pollutantService.delPollutant(pollutantId);
             return true;
         }
         return false;
     }
 
-    @PutMapping("/{pollutant_id}")
-    public Pollutant updatePollutant(@PathVariable("pollutant_id") Integer pollutant_id,
+    @PutMapping("/{pollutantId}")
+    public Pollutant updatePollutant(@PathVariable("pollutantId") Integer pollutantId,
                                      @RequestBody Map<String, String> body) {
-        Pollutant currentPollutant = pollutantService.getPollutantById(pollutant_id).get();
-        currentPollutant.setPollutant_name(body.get("pollutant_name"));
+        Pollutant currentPollutant = pollutantService.getPollutantById(pollutantId).get();
+        currentPollutant.setPollutantName(body.get("pollutantName"));
         currentPollutant.setUnit(body.get("unit"));
         currentPollutant.setDescription(body.get("description"));
 

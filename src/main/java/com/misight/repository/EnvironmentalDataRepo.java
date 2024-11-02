@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface EnvironmentalDataRepo extends JpaRepository<EnvironmentalData, Integer> {
     List<EnvironmentalData> findByDate(LocalDate date);
-    List<EnvironmentalData> findByStationId(Integer station_id);
-    List<EnvironmentalData> findByPollutantId(Integer pollutant_id);
+    List<EnvironmentalData> findByStationStationId(Integer stationId);
+    List<EnvironmentalData> findByPollutantPollutantId(Integer pollutantId);
 }
+

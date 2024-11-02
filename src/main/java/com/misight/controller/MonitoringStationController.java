@@ -32,32 +32,32 @@ public class MonitoringStationController {
         return stationService.getAllStations();
     }
 
-    @GetMapping("/{station_id}")
-    public Optional<MonitoringStation> getStationById(@PathVariable("station_id") Integer station_id) {
-        return stationService.getStationById(station_id);
+    @GetMapping("/{stationId}")
+    public Optional<MonitoringStation> getStationById(@PathVariable("stationId") Integer stationId) {
+        return stationService.getStationById(stationId);
     }
 
-    @GetMapping("/province/{province_id}")
-    public List<MonitoringStation> getStationsByProvince(@PathVariable("province_id") Integer province_id) {
-        return stationService.getStationsByProvince(province_id);
+    @GetMapping("/province/{provinceId}")
+    public List<MonitoringStation> getStationsByProvince(@PathVariable("provinceId") Integer provinceId) {
+        return stationService.getStationsByProvince(provinceId);
     }
 
-    @DeleteMapping("/{station_id}")
-    public boolean deleteStation(@PathVariable("station_id") Integer station_id) {
-        if (!stationService.findById(station_id).equals(Optional.empty())) {
-            stationService.delStation(station_id);
+    @DeleteMapping("/{stationId}")
+    public boolean deleteStation(@PathVariable("stationId") Integer stationId) {
+        if (!stationService.findById(stationId).equals(Optional.empty())) {
+            stationService.delStation(stationId);
             return true;
         }
         return false;
     }
 
-    @PutMapping("/{station_id}")
-    public MonitoringStation updateStation(@PathVariable("station_id") Integer station_id,
+    @PutMapping("/{stationId}")
+    public MonitoringStation updateStation(@PathVariable("stationId") Integer stationId,
                                            @RequestBody Map<String, String> body) {
-        MonitoringStation currentStation = stationService.getStationById(station_id).get();
-        currentStation.setStation_name(body.get("station_name"));
+        MonitoringStation currentStation = stationService.getStationById(stationId).get();
+        currentStation.setStationName(body.get("stationName"));
         currentStation.setLocation(body.get("location"));
-        currentStation.setProvince_id(Integer.parseInt(body.get("province_id")));
+        currentStation.setProvinceId(Integer.parseInt(body.get("provinceId")));
 
         stationService.addStation(currentStation);
         return currentStation;

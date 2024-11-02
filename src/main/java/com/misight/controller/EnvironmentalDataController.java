@@ -1,15 +1,13 @@
-// Existing controller for EnvironmentalData
 package com.misight.controller;
 
 import com.misight.model.EnvironmentalData;
 import com.misight.service.EnvironmentalDataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/environmental-data")
@@ -22,30 +20,52 @@ public class EnvironmentalDataController {
         this.environmentalDataService = environmentalDataService;
     }
 
-    @PostMapping
-    public ResponseEntity<EnvironmentalData> createEnvironmentalData(@RequestBody EnvironmentalData data) {
-        EnvironmentalData addedData = environmentalDataService.addEnvironmentalData(data);
-        return new ResponseEntity<>(addedData, HttpStatus.CREATED);
-    }
-
     @GetMapping
-    public List<EnvironmentalData> getAllEnvironmentalData() {
-        return environmentalDataService.getAllEnvironmentalData();
+    public ResponseEntity<List<EnvironmentalData>> getAllEnvironmentalData() {
+        return ResponseEntity.ok(environmentalDataService.getAllEnvironmentalData());
     }
 
-    @GetMapping("/{data_id}")
-    public Optional<EnvironmentalData> getEnvironmentalDataById(@PathVariable Integer data_id) {
-        return environmentalDataService.getEnvironmentalDataById(data_id);
+    @GetMapping("/{id}")
+    public ResponseEntity<EnvironmentalData> getEnvironmentalDataById(@PathVariable Integer id) {
+        return environmentalDataService.getEnvironmentalDataById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/date/{date}")
-    public List<EnvironmentalData> getEnvironmentalDataByDate(@PathVariable String date) {
-        return environmentalDataService.getEnvironmentalDataByDate(LocalDate.parse(date));
+    public ResponseEntity<List<EnvironmentalData>> getByDate(
+            @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        return ResponseEntity.ok(environmentalDataService.getEnvironmentalDataByDate(date));
     }
 
-    @DeleteMapping("/{data_id}")
-    public ResponseEntity<Void> deleteEnvironmentalData(@PathVariable Integer data_id) {
-        environmentalDataService.deleteEnvironmentalData(data_id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @GetMapping("/station/{stationId}")
+    public ResponseEntity<List<EnvironmentalData>> getByStation(@PathVariable Integer stationId) {
+        return ResponseEntity.ok(environmentalDataService.getEnvironmentalDataByStation(stationId));
+    }
+
+    @GetMapping("/pollutant/{pollutantId}")
+    public ResponseEntity<List<EnvironmentalData>> getByPollutant(@PathVariable Integer pollutantId) {
+        return ResponseEntity.ok(environmentalDataService.getEnvironmentalDataByPollutant(pollutantId));
+    }
+
+    @PostMapping
+    public ResponseEntity<EnvironmentalData> createEnvironmentalData(@RequestBody EnvironmentalData data) {
+        return ResponseEntity.ok(environmentalDataService.createEnvironmentalData(data));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EnvironmentalData> updateEnvironmentalData(
+            @PathVariable Integer id,
+            @RequestBody EnvironmentalData data) {
+        return environmentalDataService.updateEnvironmentalData(id, data)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEnvironmentalData(@PathVariable Integer id) {
+        return environmentalDataService.deleteEnvironmentalData(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

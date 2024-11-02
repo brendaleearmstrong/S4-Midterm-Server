@@ -9,41 +9,87 @@ public class SafetyData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer safety_id;
+    private int safetyId;
 
-    @Column(nullable = false)
-    private String incident_description;
+    private int mineId;
+    private LocalDate dateRecorded;
+    private int lostTimeIncidents;
+    private int nearMisses;
 
-    @Column(nullable = false)
-    private LocalDate date;
+    @Enumerated(EnumType.STRING)
+    private SafetyLevel safetyLevel;
 
-    @Column(nullable = false)
-    private String location;
+    public enum SafetyLevel {
+        EXCELLENT, GOOD, FAIR, NEEDS_IMPROVEMENT, CRITICAL
+    }
 
     public SafetyData() {}
 
-    public SafetyData(String incident_description, LocalDate date, String location) {
-        this.incident_description = incident_description;
-        this.date = date;
-        this.location = location;
+    public SafetyData(int mineId, LocalDate dateRecorded, int lostTimeIncidents, int nearMisses, SafetyLevel safetyLevel) {
+        this.mineId = mineId;
+        this.dateRecorded = dateRecorded;
+        this.lostTimeIncidents = lostTimeIncidents;
+        this.nearMisses = nearMisses;
+        this.safetyLevel = safetyLevel;
     }
 
-    public Integer getSafety_id() { return safety_id; }
-    public String getIncident_description() { return incident_description; }
-    public LocalDate getDate() { return date; }
-    public String getLocation() { return location; }
+    public int getSafetyId() {
+        return safetyId;
+    }
 
-    public void setIncident_description(String incident_description) { this.incident_description = incident_description; }
-    public void setDate(LocalDate date) { this.date = date; }
-    public void setLocation(String location) { this.location = location; }
+    public void setSafetyId(int safetyId) {
+        this.safetyId = safetyId;
+    }
+
+    public int getMineId() {
+        return mineId;
+    }
+
+    public void setMineId(int mineId) {
+        this.mineId = mineId;
+    }
+
+    public LocalDate getDateRecorded() {
+        return dateRecorded;
+    }
+
+    public void setDateRecorded(LocalDate dateRecorded) {
+        this.dateRecorded = dateRecorded;
+    }
+
+    public int getLostTimeIncidents() {
+        return lostTimeIncidents;
+    }
+
+    public void setLostTimeIncidents(int lostTimeIncidents) {
+        this.lostTimeIncidents = lostTimeIncidents;
+    }
+
+    public int getNearMisses() {
+        return nearMisses;
+    }
+
+    public void setNearMisses(int nearMisses) {
+        this.nearMisses = nearMisses;
+    }
+
+    public SafetyLevel getSafetyLevel() {
+        return safetyLevel;
+    }
+
+    public void setSafetyLevel(SafetyLevel safetyLevel) {
+        this.safetyLevel = safetyLevel;
+    }
 
     @Override
     public String toString() {
         return "SafetyData{" +
-                "safety_id=" + safety_id +
-                ", incident_description='" + incident_description + '\'' +
-                ", date=" + date +
-                ", location='" + location + '\'' +
+                "safetyId=" + safetyId +
+                ", mineId=" + mineId +
+                ", dateRecorded=" + dateRecorded +
+                ", lostTimeIncidents=" + lostTimeIncidents +
+                ", nearMisses=" + nearMisses +
+                ", safetyLevel=" + safetyLevel +
                 '}';
     }
 }
