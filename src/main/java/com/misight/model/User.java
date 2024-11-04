@@ -1,13 +1,16 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int user_id;
+    @Column(name = "user_id")
+    private int userId;
 
     @Column(unique = true, nullable = false)
     private String username;
@@ -18,6 +21,14 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private UserRole role;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_privileges",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "privilege_id")
+    )
+    private Set<Privilege> privileges = new HashSet<>();
 
     public static enum UserRole {
         ADMIN,
@@ -33,8 +44,12 @@ public class User {
         this.role = role;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -61,7 +76,24 @@ public class User {
         this.role = role;
     }
 
-    // Add basic password verification
+    public Set<Privilege> getPrivileges() {
+        return privileges;
+    }
+
+    public void setPrivileges(Set<Privilege> privileges) {
+        this.privileges = privileges;
+    }
+
+    public void addPrivilege(Privilege privilege) {
+        this.privileges.add(privilege);
+        privilege.getUsers().add(this);
+    }
+
+    public void removePrivilege(Privilege privilege) {
+        this.privileges.remove(privilege);
+        privilege.getUsers().remove(this);
+    }
+
     public boolean verifyPassword(String rawPassword) {
         return this.password.equals(rawPassword);
     }
@@ -69,7 +101,7 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "user_id=" + user_id +
+                "userId=" + userId +
                 ", username='" + username + '\'' +
                 ", role=" + role +
                 '}';

@@ -1,79 +1,86 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 @Entity
 @Table(name = "mines")
 public class Mine {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int mine_id;
-    public String mine_name;
-    public String location;
-    public String company;
-    public int province_id;
+    @Column(name = "mine_id")
+    private int mineId;
 
-    private Mine(int mineId, String mineName, String location, String company, int provinceId){
+    @Column(name = "mine_name")
+    private String mineName;
 
-        this.mine_id = mineId;
-        this.mine_name = mineName;
+    @Column(name = "location")
+    private String location;
+
+    @Column(name = "company")
+    private String company;
+
+    @Column(name = "province_id")
+    private int provinceId;
+
+    public Mine(int mineId, String mineName, String location, String company, int provinceId) {
+        this.mineId = mineId;
+        this.mineName = mineName;
         this.location = location;
         this.company = company;
-        this.province_id = provinceId;
+        this.provinceId = provinceId;
     }
 
-    public Mine(){
-
+    public Mine() {
     }
 
-    public int getMine_id() {
-        return mine_id;
+    public int getMineId() {
+        return mineId;
     }
 
-    public String getMine_name() {
-        return mine_name;
+    public void setMineId(int mineId) {
+        this.mineId = mineId;
+    }
+
+    public String getMineName() {
+        return mineName;
+    }
+
+    public void setMineName(String mineName) {
+        this.mineName = mineName;
     }
 
     public String getLocation() {
         return location;
     }
 
-    public String getCompany() {
-        return company;
-    }
-
-    public int getProvince_id() {
-        return province_id;
-    }
-
-    public void setMine_name(String mine_name) {
-        this.mine_name = mine_name;
-    }
-
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getCompany() {
+        return company;
     }
 
     public void setCompany(String company) {
         this.company = company;
     }
 
-    public void setProvince_id(int province_id) {
-        this.province_id = province_id;
+    public int getProvinceId() {
+        return provinceId;
+    }
+
+    public void setProvinceId(int provinceId) {
+        this.provinceId = provinceId;
     }
 
     @Override
     public String toString() {
         return "Mine{" +
-                "mine_id=" + mine_id +
-                ", mine_name='" + mine_name + '\'' +
+                "mineId=" + mineId +
+                ", mineName='" + mineName + '\'' +
                 ", location='" + location + '\'' +
                 ", company='" + company + '\'' +
-                ", province_id=" + province_id +
+                ", provinceId=" + provinceId +
                 '}';
     }
 }
-

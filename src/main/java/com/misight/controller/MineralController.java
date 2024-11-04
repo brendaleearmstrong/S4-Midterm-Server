@@ -12,47 +12,54 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-
+@RequestMapping("/api/minerals")
+@CrossOrigin(origins = "*")
 public class MineralController {
 
     private final MineralService mineralService;
 
     @Autowired
-    public MineralController(MineralService mineralService){
+    public MineralController(MineralService mineralService) {
         this.mineralService = mineralService;
     }
 
-    @PostMapping("/minerals")
-    public ResponseEntity<Mineral> createMine(@RequestBody Mineral mineral){
+    @PostMapping
+    public ResponseEntity<Mineral> createMineral(@RequestBody Mineral mineral) {
         Mineral addedMineral = mineralService.addMineral(mineral);
         return new ResponseEntity<>(addedMineral, HttpStatus.CREATED);
     }
 
-    @GetMapping("/minerals")
-    public List<Mineral> getMinerals(){
-        return mineralService.getAllMinerals();
+    @GetMapping
+    public ResponseEntity<List<Mineral>> getMinerals() {
+        return ResponseEntity.ok(mineralService.getAllMinerals());
     }
 
-    @GetMapping("/minerals/{mineral_id}")
-    public Optional<Mineral> getMineralById(@PathVariable("mineral_id") Integer mineral_id){
-        return mineralService.getMineralById(mineral_id);
+    @GetMapping("/{mineralId}")
+    public ResponseEntity<Mineral> getMineralById(@PathVariable Integer mineralId) {
+        return mineralService.getMineralById(mineralId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/minerals/{mineral_id}")
-    public boolean deleteMineral(@PathVariable("mineral_id") Integer mineral_id){
-        if(!mineralService.findById(mineral_id).equals(Optional.empty())){
-            mineralService.delMineral(mineral_id);
-            return true;
+    @DeleteMapping("/{mineralId}")
+    public ResponseEntity<Void> deleteMineral(@PathVariable Integer mineralId) {
+        Optional<Mineral> mineral = mineralService.findById(mineralId);
+        if (mineral.isPresent()) {
+            mineralService.delMineral(mineralId);
+            return ResponseEntity.noContent().build();
         }
-        return false;
+        return ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/minerals/{mineral_id}")
-    public Mineral updateMineral(@PathVariable("mineral_id") Integer mineral_id, @RequestBody Map<String, String> body){
-        Mineral currentMineral = mineralService.getMineralById(mineral_id).get();
-        currentMineral.setMineral_name(body.get("mineral_name"));
-
-        mineralService.addMineral(currentMineral);
-        return currentMineral;
+    @PutMapping("/{mineralId}")
+    public ResponseEntity<Mineral> updateMineral(@PathVariable Integer mineralId,
+                                                 @RequestBody Map<String, String> body) {
+        return mineralService.getMineralById(mineralId)
+                .map(currentMineral -> {
+                    currentMineral.setMineralName(body.get("mineralName"));
+                    Mineral updatedMineral = mineralService.addMineral(currentMineral);
+                    return ResponseEntity.ok(updatedMineral);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }

@@ -7,35 +7,42 @@ import jakarta.persistence.*;
 public class Mineral {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer mineral_id;
-    public String mineral_name;
+    @Column(name = "mineral_id")
+    private Integer mineralId;
 
-    public Mineral(Integer mineral_id, String mineral_name){
-        this.mineral_id = mineral_id;
-        this.mineral_name = mineral_name;
+    @Column(name = "mineral_name")
+    private String mineralName;
+
+    public Mineral(Integer mineralId, String mineralName) {
+        this.mineralId = mineralId;
+        this.mineralName = mineralName;
     }
 
-    public Mineral(){
-
+    public Mineral() {
     }
 
-    public Integer getMineral_id() {
-        return mineral_id;
+    public Integer getMineralId() {
+        return mineralId;
     }
 
-    public String getMineral_name() {
-        return mineral_name;
+    public void setMineralId(Integer mineralId) {
+        this.mineralId = mineralId;
     }
 
-    public void setMineral_name(String mineral_name) {
-        this.mineral_name = mineral_name;
+    public String getMineralName() {  // This matches what's being called in MineMineral
+        return mineralName;
+    }
+
+    public void setMineralName(String mineralName) {
+        this.mineralName = mineralName;
     }
 
     @Override
     public String toString() {
         return "Mineral{" +
-                "mineral_id=" + mineral_id +
-                ", mineral_name='" + mineral_name + '\'' +
+                "mineralId=" + mineralId +
+                ", mineralName='" + mineralName + '\'' +
                 '}';
     }
 }
+
