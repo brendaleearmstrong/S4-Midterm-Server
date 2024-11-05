@@ -8,3 +8,4 @@ import org.springframework.stereotype.Repository;
 public interface PollutantRepo extends JpaRepository<Pollutant, Long> {
     boolean existsByNameIgnoreCase(String name);
 }
+

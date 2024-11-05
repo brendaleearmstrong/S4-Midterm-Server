@@ -1,12 +1,12 @@
 package com.misight.service;
 
-import com.misight.exception.ResourceNotFoundException;
 import com.misight.model.MonitoringStation;
 import com.misight.repository.MonitoringStationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MonitoringStationService {
@@ -18,35 +18,19 @@ public class MonitoringStationService {
         this.monitoringStationRepo = monitoringStationRepo;
     }
 
-    public List<MonitoringStation> getAllStations() {
+    public List<MonitoringStation> findAll() {
         return monitoringStationRepo.findAll();
     }
 
-    public MonitoringStation getStationById(Long id) {
-        return monitoringStationRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Monitoring station not found with id: " + id));
+    public Optional<MonitoringStation> findById(Long id) {
+        return monitoringStationRepo.findById(id);
     }
 
-    public List<MonitoringStation> getStationsByProvince(Long provinceId) {
-        return monitoringStationRepo.findByProvinceId(provinceId);
+    public MonitoringStation save(MonitoringStation monitoringStation) {
+        return monitoringStationRepo.save(monitoringStation);
     }
 
-    public MonitoringStation createStation(MonitoringStation station) {
-        return monitoringStationRepo.save(station);
-    }
-
-    public MonitoringStation updateStation(Long id, MonitoringStation stationDetails) {
-        MonitoringStation station = getStationById(id);
-        station.setName(stationDetails.getName());
-        station.setLocation(stationDetails.getLocation());
-        station.setProvince(stationDetails.getProvince());
-        return monitoringStationRepo.save(station);
-    }
-
-    public void deleteStation(Long id) {
-        if (!monitoringStationRepo.existsById(id)) {
-            throw new ResourceNotFoundException("Monitoring station not found with id: " + id);
-        }
+    public void deleteById(Long id) {
         monitoringStationRepo.deleteById(id);
     }
 }

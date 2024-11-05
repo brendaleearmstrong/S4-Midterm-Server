@@ -1,48 +1,30 @@
 package com.misight.model;
 
-import jakarta.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
-@Table(name = "provinces")
 public class Province {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long provinceId;
+    private Long id;
+    private String name;
 
-    @Column(nullable = false)
-    private String provinceName;
-
-    @OneToMany(mappedBy = "province", cascade = CascadeType.ALL)
-    private Set<Mine> mines = new HashSet<>();
-
-    @OneToMany(mappedBy = "province", cascade = CascadeType.ALL)
-    private Set<MonitoringStation> monitoringStations = new HashSet<>();
-
-    public Province() {}
-
-    public Province(String provinceName) {
-        this.provinceName = provinceName;
+    public Long getId() {
+        return id;
     }
 
-    public Long getProvinceId() { return provinceId; }
-    public String getProvinceName() { return provinceName; }
-    public Set<Mine> getMines() { return mines; }
-    public Set<MonitoringStation> getMonitoringStations() { return monitoringStations; }
-
-    public void setProvinceName(String provinceName) { this.provinceName = provinceName; }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Province)) return false;
-        Province province = (Province) o;
-        return provinceId != null && provinceId.equals(province.provinceId);
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

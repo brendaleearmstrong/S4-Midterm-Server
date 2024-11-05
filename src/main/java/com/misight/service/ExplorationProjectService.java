@@ -6,14 +6,13 @@ import com.misight.repository.ExplorationProjectRepo;
 import com.misight.repository.MineRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDate;
+
 import java.util.List;
-import com.misight.exception.ResourceNotFoundException;
+import java.util.Optional;
 
 @Service
-@Transactional
 public class ExplorationProjectService {
+
     private final ExplorationProjectRepo explorationProjectRepo;
     private final MineRepo mineRepo;
 
@@ -23,62 +22,36 @@ public class ExplorationProjectService {
         this.mineRepo = mineRepo;
     }
 
-    public ExplorationProject createProject(Long mineId, ExplorationProject project) {
-        Mine mine = mineRepo.findById(mineId)
-                .orElseThrow(() -> new ResourceNotFoundException("Mine not found with id: " + mineId));
-
-        project.setMine(mine);
-
-        if (project.getEndDate().isBefore(project.getStartDate())) {
-            throw new IllegalArgumentException("End date cannot be before start date");
+    public ExplorationProject addExplorationProject(ExplorationProject project, Long mineId) {
+        if (mineId != null) {
+            Optional<Mine> mineOptional = mineRepo.findById(mineId);
+            mineOptional.ifPresent(project::setMine);
         }
-
         return explorationProjectRepo.save(project);
     }
 
-    public ExplorationProject getProjectById(Long id) {
-        return explorationProjectRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Exploration project not found with id: " + id));
-    }
-
-    public List<ExplorationProject> getAllProjects() {
+    public List<ExplorationProject> getAllExplorationProjects() {
         return explorationProjectRepo.findAll();
     }
 
-    public List<ExplorationProject> getProjectsByMine(Long mineId) {
-        if (!mineRepo.existsById(mineId)) {
-            throw new ResourceNotFoundException("Mine not found with id: " + mineId);
+    public Optional<ExplorationProject> getExplorationProjectById(Long id) {
+        return explorationProjectRepo.findById(id);
+    }
+
+    public ExplorationProject updateExplorationProject(Long id, ExplorationProject updatedProject, Long mineId) {
+        Optional<ExplorationProject> existingProjectOpt = explorationProjectRepo.findById(id);
+        if (existingProjectOpt.isPresent()) {
+            ExplorationProject existingProject = existingProjectOpt.get();
+            existingProject.setProjectName(updatedProject.getProjectName());
+            if (mineId != null) {
+                mineRepo.findById(mineId).ifPresent(existingProject::setMine);
+            }
+            return explorationProjectRepo.save(existingProject);
         }
-        return explorationProjectRepo.findByMine_MineId(mineId);
+        throw new RuntimeException("Exploration Project not found with id: " + id);
     }
 
-    public List<ExplorationProject> getProjectsByDateRange(LocalDate startDate, LocalDate endDate) {
-        return explorationProjectRepo.findByStartDateBetween(startDate, endDate);
-    }
-
-    public List<ExplorationProject> getActiveProjects(LocalDate date) {
-        return explorationProjectRepo.findByEndDateAfter(date);
-    }
-
-    public ExplorationProject updateProject(Long id, ExplorationProject projectDetails) {
-        ExplorationProject project = getProjectById(id);
-
-        if (projectDetails.getEndDate().isBefore(projectDetails.getStartDate())) {
-            throw new IllegalArgumentException("End date cannot be before start date");
-        }
-
-        project.setName(projectDetails.getName());
-        project.setStartDate(projectDetails.getStartDate());
-        project.setEndDate(projectDetails.getEndDate());
-        project.setBudget(projectDetails.getBudget());
-
-        return explorationProjectRepo.save(project);
-    }
-
-    public void deleteProject(Long id) {
-        if (!explorationProjectRepo.existsById(id)) {
-            throw new ResourceNotFoundException("Exploration project not found with id: " + id);
-        }
+    public void deleteExplorationProject(Long id) {
         explorationProjectRepo.deleteById(id);
     }
 }

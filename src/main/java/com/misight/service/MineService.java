@@ -1,86 +1,54 @@
 package com.misight.service;
 
-import com.misight.exception.ResourceNotFoundException;
 import com.misight.model.Mine;
-import com.misight.model.Province;
+import com.misight.model.Mineral;
 import com.misight.repository.MineRepo;
-import com.misight.repository.ProvinceRepo;
+import com.misight.repository.MineralRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Transactional
 public class MineService {
-    private final MineRepo mineRepo;
-    private final ProvinceRepo provinceRepo;
 
     @Autowired
-    public MineService(MineRepo mineRepo, ProvinceRepo provinceRepo) {
-        this.mineRepo = mineRepo;
-        this.provinceRepo = provinceRepo;
-    }
+    private MineRepo mineRepo;
 
-    public Mine createMine(Mine mine) {
-        if (mine.getProvince() != null && mine.getProvince().getProvinceId() != null) {
-            Province province = provinceRepo.findById(mine.getProvince().getProvinceId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Province not found"));
-            mine.setProvince(province);
-        }
-        return mineRepo.save(mine);
-    }
-
-    public Mine getMineById(Long id) {
-        return mineRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Mine not found with id: " + id));
-    }
-
-    public Mine getMineWithMinerals(Long id) {
-        return mineRepo.findByIdWithMinerals(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Mine not found with id: " + id));
-    }
+    @Autowired
+    private MineralRepo mineralRepo;
 
     public List<Mine> getAllMines() {
         return mineRepo.findAll();
     }
 
-    public List<Mine> getMinesByCompany(String company) {
-        return mineRepo.findByCompany(company);
+    public Mine getMineById(Long id) {
+        return mineRepo.findById(id).orElse(null);
     }
 
-    public List<Mine> getMinesByProvince(Long provinceId) {
-        return mineRepo.findByProvinceProvinceId(provinceId);
-    }
-
-    public List<Mine> getMinesByMineral(Long mineralId) {
-        return mineRepo.findByMineralsMineralId(mineralId);
-    }
-
-    public List<Mine> searchMinesByName(String name) {
-        return mineRepo.findByMineNameContainingIgnoreCase(name);
-    }
-
-    public Mine updateMine(Long id, Mine mineDetails) {
-        Mine mine = getMineById(id);
-
-        mine.setMineName(mineDetails.getMineName());
-        mine.setLocation(mineDetails.getLocation());
-        mine.setCompany(mineDetails.getCompany());
-
-        if (mineDetails.getProvince() != null && mineDetails.getProvince().getProvinceId() != null) {
-            Province province = provinceRepo.findById(mineDetails.getProvince().getProvinceId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Province not found"));
-            mine.setProvince(province);
-        }
-
+    public Mine createMine(Mine mine) {
         return mineRepo.save(mine);
     }
 
-    public void deleteMine(Long id) {
-        if (!mineRepo.existsById(id)) {
-            throw new ResourceNotFoundException("Mine not found with id: " + id);
+    public Mine updateMine(Long id, Mine updatedMine) {
+        Mine mine = getMineById(id);
+        if (mine != null) {
+            mine.setName(updatedMine.getName());
+            mine.setProvince(updatedMine.getProvince());
+            return mineRepo.save(mine);
         }
+        return null;
+    }
+
+    public void deleteMine(Long id) {
         mineRepo.deleteById(id);
     }
+
+    public List<Mineral> getMineralsByMineName(String mineName) {
+        Mine mine = mineRepo.findByName(mineName).orElse(null);
+        return mine != null ? new ArrayList<>(mine.getMinerals()) : null;
+    }
 }
+
+
