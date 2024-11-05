@@ -7,13 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/stations")
+@CrossOrigin(origins = "*")
 public class MonitoringStationController {
-
     private final MonitoringStationService stationService;
 
     @Autowired
@@ -21,50 +19,36 @@ public class MonitoringStationController {
         this.stationService = stationService;
     }
 
-    @PostMapping
-    public ResponseEntity<MonitoringStation> createStation(@RequestBody MonitoringStation station) {
-        MonitoringStation addedStation = stationService.addStation(station);
-        return new ResponseEntity<>(addedStation, HttpStatus.CREATED);
-    }
-
     @GetMapping
-    public List<MonitoringStation> getStations() {
-        return stationService.getAllStations();
+    public ResponseEntity<List<MonitoringStation>> getAllStations() {
+        return ResponseEntity.ok(stationService.getAllStations());
     }
 
-    @GetMapping("/{stationId}")
-    public ResponseEntity<MonitoringStation> getStationById(@PathVariable Integer stationId) {
-        return stationService.getStationById(stationId)
-                .map(station -> new ResponseEntity<>(station, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    @GetMapping("/{id}")
+    public ResponseEntity<MonitoringStation> getStationById(@PathVariable Long id) {
+        return ResponseEntity.ok(stationService.getStationById(id));
     }
 
     @GetMapping("/province/{provinceId}")
-    public List<MonitoringStation> getStationsByProvince(@PathVariable Integer provinceId) {
-        return stationService.getStationsByProvince(provinceId);
+    public ResponseEntity<List<MonitoringStation>> getStationsByProvince(@PathVariable Long provinceId) {
+        return ResponseEntity.ok(stationService.getStationsByProvince(provinceId));
     }
 
-    @PutMapping("/{stationId}")
+    @PostMapping
+    public ResponseEntity<MonitoringStation> createStation(@RequestBody MonitoringStation station) {
+        return new ResponseEntity<>(stationService.createStation(station), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
     public ResponseEntity<MonitoringStation> updateStation(
-            @PathVariable Integer stationId,
-            @RequestBody MonitoringStation updatedStation) {
-        return stationService.getStationById(stationId)
-                .map(currentStation -> {
-                    currentStation.setStationName(updatedStation.getStationName());
-                    currentStation.setLocation(updatedStation.getLocation());
-                    currentStation.setProvince(updatedStation.getProvince());
-                    MonitoringStation saved = stationService.addStation(currentStation);
-                    return new ResponseEntity<>(saved, HttpStatus.OK);
-                })
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            @PathVariable Long id,
+            @RequestBody MonitoringStation station) {
+        return ResponseEntity.ok(stationService.updateStation(id, station));
     }
 
-    @DeleteMapping("/{stationId}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Integer stationId) {
-        if (stationService.getStationById(stationId).isPresent()) {
-            stationService.deleteStation(stationId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
+        stationService.deleteStation(id);
+        return ResponseEntity.noContent().build();
     }
 }

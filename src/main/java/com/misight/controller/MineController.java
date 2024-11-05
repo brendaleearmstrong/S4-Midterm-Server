@@ -1,31 +1,23 @@
-// Adding to override changes
-
 package com.misight.controller;
 
 import com.misight.model.Mine;
-import com.misight.model.MineDTO;
-import com.misight.model.Province;
-import com.misight.repository.ProvinceRepo;
 import com.misight.service.MineService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
-
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/mines")
+@CrossOrigin(origins = "*")
 public class MineController {
+    private final MineService mineService;
 
     @Autowired
-    private MineService mineService;
-
-    @Autowired
-    private ProvinceRepo provinceRepo;
+    public MineController(MineService mineService) {
+        this.mineService = mineService;
+    }
 
     @GetMapping
     public ResponseEntity<List<Mine>> getAllMines() {
@@ -33,60 +25,48 @@ public class MineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Mine> getMineById(@PathVariable int id) {
-        return mineService.getMineById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Mine> getMineById(@PathVariable Long id) {
+        return ResponseEntity.ok(mineService.getMineById(id));
+    }
+
+    @GetMapping("/{id}/minerals")
+    public ResponseEntity<Mine> getMineWithMinerals(@PathVariable Long id) {
+        return ResponseEntity.ok(mineService.getMineWithMinerals(id));
+    }
+
+    @GetMapping("/company/{company}")
+    public ResponseEntity<List<Mine>> getMinesByCompany(@PathVariable String company) {
+        return ResponseEntity.ok(mineService.getMinesByCompany(company));
+    }
+
+    @GetMapping("/province/{provinceId}")
+    public ResponseEntity<List<Mine>> getMinesByProvince(@PathVariable Long provinceId) {
+        return ResponseEntity.ok(mineService.getMinesByProvince(provinceId));
+    }
+
+    @GetMapping("/mineral/{mineralId}")
+    public ResponseEntity<List<Mine>> getMinesByMineral(@PathVariable Long mineralId) {
+        return ResponseEntity.ok(mineService.getMinesByMineral(mineralId));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Mine>> searchMinesByName(@RequestParam String name) {
+        return ResponseEntity.ok(mineService.searchMinesByName(name));
     }
 
     @PostMapping
-    public ResponseEntity<Mine> createMine(@Validated @RequestBody MineDTO mineDTO) {
-        try {
-            if (mineDTO.getMine_id() == null) {
-                throw new IllegalArgumentException("Mine ID cannot be null");
-            }
-            Mine mine = new Mine();
-            mine.setMineName(mineDTO.getMineName());
-            mine.setLocation(mineDTO.getLocation());
-            mine.setCompany(mineDTO.getCompany());
-
-            Optional<Province> provinceOptional = provinceRepo.findById(mineDTO.getProvinceId());
-            if (provinceOptional.isPresent()) {
-                mine.setProvince(provinceOptional.get());
-            } else {
-                return ResponseEntity.badRequest().body(null);
-            }
-
-            Mine savedMine = mineService.saveMine(mine);
-            return new ResponseEntity<>(savedMine, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<Mine> createMine(@RequestBody Mine mine) {
+        return new ResponseEntity<>(mineService.createMine(mine), HttpStatus.CREATED);
     }
-
 
     @PutMapping("/{id}")
-    public ResponseEntity<Mine> updateMine(@PathVariable int id, @Validated @RequestBody Mine mine) {
-        return mineService.updateMine(id, mine)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<Mine> patchMine(@PathVariable int id, @RequestBody Map<String, Object> updates) {
-        return mineService.patchMine(id, updates)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Mine> updateMine(@PathVariable Long id, @RequestBody Mine mine) {
+        return ResponseEntity.ok(mineService.updateMine(id, mine));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMine(@PathVariable int id) {
-        return mineService.deleteMine(id)
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+    public ResponseEntity<Void> deleteMine(@PathVariable Long id) {
+        mineService.deleteMine(id);
+        return ResponseEntity.noContent().build();
     }
 }

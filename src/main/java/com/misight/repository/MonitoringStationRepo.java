@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface MonitoringStationRepo extends JpaRepository<MonitoringStation, Integer> {
-    List<MonitoringStation> findByProvinceProvinceId(Integer provinceId);
+public interface MonitoringStationRepo extends JpaRepository<MonitoringStation, Long> {
+    List<MonitoringStation> findByProvinceId(Long provinceId);
+    boolean existsByStationName(String stationName);
 }

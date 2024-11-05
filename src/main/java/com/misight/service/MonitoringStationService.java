@@ -1,38 +1,52 @@
 package com.misight.service;
 
+import com.misight.exception.ResourceNotFoundException;
 import com.misight.model.MonitoringStation;
 import com.misight.repository.MonitoringStationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MonitoringStationService {
-    private final MonitoringStationRepo stationRepo;
+
+    private final MonitoringStationRepo monitoringStationRepo;
 
     @Autowired
-    public MonitoringStationService(MonitoringStationRepo stationRepo) {
-        this.stationRepo = stationRepo;
-    }
-
-    public MonitoringStation addStation(MonitoringStation station) {
-        return stationRepo.save(station);
+    public MonitoringStationService(MonitoringStationRepo monitoringStationRepo) {
+        this.monitoringStationRepo = monitoringStationRepo;
     }
 
     public List<MonitoringStation> getAllStations() {
-        return stationRepo.findAll();
+        return monitoringStationRepo.findAll();
     }
 
-    public Optional<MonitoringStation> getStationById(Integer stationId) {
-        return stationRepo.findById(stationId);
+    public MonitoringStation getStationById(Long id) {
+        return monitoringStationRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Monitoring station not found with id: " + id));
     }
 
-    public List<MonitoringStation> getStationsByProvince(Integer provinceId) {
-        return stationRepo.findByProvinceProvinceId(provinceId);
+    public List<MonitoringStation> getStationsByProvince(Long provinceId) {
+        return monitoringStationRepo.findByProvinceId(provinceId);
     }
 
-    public void deleteStation(Integer stationId) {
-        stationRepo.deleteById(stationId);
+    public MonitoringStation createStation(MonitoringStation station) {
+        return monitoringStationRepo.save(station);
+    }
+
+    public MonitoringStation updateStation(Long id, MonitoringStation stationDetails) {
+        MonitoringStation station = getStationById(id);
+        station.setName(stationDetails.getName());
+        station.setLocation(stationDetails.getLocation());
+        station.setProvince(stationDetails.getProvince());
+        return monitoringStationRepo.save(station);
+    }
+
+    public void deleteStation(Long id) {
+        if (!monitoringStationRepo.existsById(id)) {
+            throw new ResourceNotFoundException("Monitoring station not found with id: " + id);
+        }
+        monitoringStationRepo.deleteById(id);
     }
 }

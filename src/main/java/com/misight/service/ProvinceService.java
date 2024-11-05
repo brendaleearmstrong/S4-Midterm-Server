@@ -1,47 +1,60 @@
 package com.misight.service;
 
+import com.misight.exception.ResourceNotFoundException;
 import com.misight.model.Province;
 import com.misight.repository.ProvinceRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Transactional
 public class ProvinceService {
+    private final ProvinceRepo provinceRepo;
 
     @Autowired
-    private ProvinceRepo provinceRepo;
+    public ProvinceService(ProvinceRepo provinceRepo) {
+        this.provinceRepo = provinceRepo;
+    }
+
+    public Province createProvince(Province province) {
+        if (provinceRepo.existsByProvinceNameIgnoreCase(province.getProvinceName())) {
+            throw new IllegalArgumentException("Province with this name already exists");
+        }
+        return provinceRepo.save(province);
+    }
+
+    public Province getProvinceById(Long id) {
+        return provinceRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Province not found with id: " + id));
+    }
+
+    public Province getProvinceWithMines(Long id) {
+        return provinceRepo.findByIdWithMines(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Province not found with id: " + id));
+    }
 
     public List<Province> getAllProvinces() {
         return provinceRepo.findAll();
     }
 
-    public Province getProvinceById(int id) {
-        Optional<Province> province = provinceRepo.findById(id);
-        return province.orElse(null);
-    }
+    public Province updateProvince(Long id, Province provinceDetails) {
+        Province province = getProvinceById(id);
 
-    public Province createProvince(Province province) {
+        if (!province.getProvinceName().equalsIgnoreCase(provinceDetails.getProvinceName()) &&
+                provinceRepo.existsByProvinceNameIgnoreCase(provinceDetails.getProvinceName())) {
+            throw new IllegalArgumentException("Province with this name already exists");
+        }
+
+        province.setProvinceName(provinceDetails.getProvinceName());
         return provinceRepo.save(province);
     }
 
-    public Province updateProvince(int id, Province provinceDetails) {
-        Optional<Province> optionalProvince = provinceRepo.findById(id);
-        if (optionalProvince.isPresent()) {
-            Province existingProvince = optionalProvince.get();
-            existingProvince.setProvinceName(provinceDetails.getProvinceName());
-            return provinceRepo.save(existingProvince);
+    public void deleteProvince(Long id) {
+        if (!provinceRepo.existsById(id)) {
+            throw new ResourceNotFoundException("Province not found with id: " + id);
         }
-        return null;
-    }
-
-    public boolean deleteProvince(int id) {
-        if (provinceRepo.existsById(id)) {
-            provinceRepo.deleteById(id);
-            return true;
-        }
-        return false;
+        provinceRepo.deleteById(id);
     }
 }

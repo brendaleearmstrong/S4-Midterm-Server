@@ -4,13 +4,14 @@ import com.misight.model.EnvironmentalData;
 import com.misight.repository.EnvironmentalDataRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+import com.misight.exception.ResourceNotFoundException;
 
 @Service
+@Transactional
 public class EnvironmentalDataService {
-
     private final EnvironmentalDataRepo environmentalDataRepo;
 
     @Autowired
@@ -18,31 +19,44 @@ public class EnvironmentalDataService {
         this.environmentalDataRepo = environmentalDataRepo;
     }
 
-    public EnvironmentalData addEnvironmentalData(EnvironmentalData data) {
+    public EnvironmentalData createData(EnvironmentalData data) {
         return environmentalDataRepo.save(data);
     }
 
-    public List<EnvironmentalData> getAllEnvironmentalData() {
+    public EnvironmentalData getDataById(Long id) {
+        return environmentalDataRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Environmental data not found with id: " + id));
+    }
+
+    public List<EnvironmentalData> getAllData() {
         return environmentalDataRepo.findAll();
     }
 
-    public Optional<EnvironmentalData> getEnvironmentalDataById(Integer dataId) {
-        return environmentalDataRepo.findById(dataId);
+    public List<EnvironmentalData> getDataByStation(Long stationId) {
+        return environmentalDataRepo.findByMonitoringStationId(stationId);
     }
 
-    public List<EnvironmentalData> getEnvironmentalDataByDate(LocalDate date) {
-        return environmentalDataRepo.findByDateRecorded(date);
+    public List<EnvironmentalData> getDataByDateRange(LocalDate startDate, LocalDate endDate) {
+        return environmentalDataRepo.findByDateRecordedBetween(startDate, endDate);
     }
 
-    public List<EnvironmentalData> getEnvironmentalDataByStation(Integer stationId) {
-        return environmentalDataRepo.findByMonitoringStation_StationId(stationId);
+    public List<EnvironmentalData> getDataByStationAndDateRange(Long stationId, LocalDate startDate, LocalDate endDate) {
+        return environmentalDataRepo.findByMonitoringStationIdAndDateRecordedBetween(stationId, startDate, endDate);
     }
 
-    public List<EnvironmentalData> getEnvironmentalDataByPollutant(Integer pollutantId) {
-        return environmentalDataRepo.findByPollutant_PollutantId(pollutantId);
+    public EnvironmentalData updateData(Long id, EnvironmentalData dataDetails) {
+        EnvironmentalData data = getDataById(id);
+        data.setDateRecorded(dataDetails.getDateRecorded());
+        data.setValue(dataDetails.getValue());
+        data.setPollutant(dataDetails.getPollutant());
+        data.setMonitoringStation(dataDetails.getMonitoringStation());
+        return environmentalDataRepo.save(data);
     }
 
-    public void deleteEnvironmentalData(Integer dataId) {
-        environmentalDataRepo.deleteById(dataId);
+    public void deleteData(Long id) {
+        if (!environmentalDataRepo.existsById(id)) {
+            throw new ResourceNotFoundException("Environmental data not found with id: " + id);
+        }
+        environmentalDataRepo.deleteById(id);
     }
 }

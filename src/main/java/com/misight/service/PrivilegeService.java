@@ -4,6 +4,7 @@ import com.misight.model.Privilege;
 import com.misight.repository.PrivilegeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.misight.exception.ResourceNotFoundException;
 
 import java.util.Optional;
 

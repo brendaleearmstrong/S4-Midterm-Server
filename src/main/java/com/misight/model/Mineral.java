@@ -1,9 +1,7 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
-
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -12,23 +10,21 @@ public class Mineral {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mineral_id")
-    private int mineralId;
+    private Long mineralId;
 
-    @Column(name = "mineral_name", nullable = false)
+    @Column(nullable = false, unique = true)
     private String mineralName;
 
     @ManyToMany(mappedBy = "minerals")
     private Set<Mine> mines = new HashSet<>();
 
-    public Mineral() {
-    }
+    public Mineral() {}
 
     public Mineral(String mineralName) {
         this.mineralName = mineralName;
     }
 
-    public int getMineralId() {
+    public Long getMineralId() {
         return mineralId;
     }
 
@@ -44,28 +40,16 @@ public class Mineral {
         return mines;
     }
 
-    public void setMines(Set<Mine> mines) {
-        this.mines = mines;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Mineral)) return false;
         Mineral mineral = (Mineral) o;
-        return mineralId == mineral.mineralId;
+        return mineralId.equals(mineral.mineralId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mineralId);
-    }
-
-    @Override
-    public String toString() {
-        return "Mineral{" +
-                "mineralId=" + mineralId +
-                ", mineralName='" + mineralName + '\'' +
-                '}';
+        return 31 * mineralId.hashCode();
     }
 }

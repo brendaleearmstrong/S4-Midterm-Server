@@ -2,7 +2,6 @@ package com.misight.model;
 
 import jakarta.persistence.*;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -10,15 +9,14 @@ import java.util.Set;
 public class Pollutant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int pollutantId;
+    private Long id;
 
-    @Column(name = "pollutant_name", nullable = false)
-    private String pollutantName;
+    @Column(nullable = false)
+    private String name;
 
     @Column(nullable = false)
     private String unit;
 
-    @Column
     private String description;
 
     @OneToMany(mappedBy = "pollutant", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -26,64 +24,33 @@ public class Pollutant {
 
     public Pollutant() {}
 
-    public Pollutant(String pollutantName, String unit, String description) {
-        this.pollutantName = pollutantName;
+    public Pollutant(String name, String unit, String description) {
+        this.name = name;
         this.unit = unit;
         this.description = description;
     }
 
-    public int getPollutantId() {
-        return pollutantId;
-    }
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public String getUnit() { return unit; }
+    public String getDescription() { return description; }
+    public Set<EnvironmentalData> getEnvironmentalData() { return environmentalData; }
 
-    public String getPollutantName() {
-        return pollutantName;
-    }
-
-    public void setPollutantName(String pollutantName) {
-        this.pollutantName = pollutantName;
-    }
-
-    public String getUnit() {
-        return unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Set<EnvironmentalData> getEnvironmentalData() {
-        return environmentalData;
-    }
+    public void setId(Long id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setUnit(String unit) { this.unit = unit; }
+    public void setDescription(String description) { this.description = description; }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Pollutant)) return false;
         Pollutant pollutant = (Pollutant) o;
-        return pollutantId == pollutant.pollutantId;
+        return id != null && id.equals(pollutant.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pollutantId);
-    }
-
-    @Override
-    public String toString() {
-        return "Pollutant{" +
-                "pollutantId=" + pollutantId +
-                ", pollutantName='" + pollutantName + '\'' +
-                ", unit='" + unit + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+        return getClass().hashCode();
     }
 }
