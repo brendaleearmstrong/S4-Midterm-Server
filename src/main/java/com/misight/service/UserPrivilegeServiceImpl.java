@@ -5,8 +5,8 @@ import com.misight.repository.UserPrivilegeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
-import com.misight.exception.ResourceNotFoundException;
 
 @Service
 @Transactional
@@ -21,14 +21,17 @@ public class UserPrivilegeServiceImpl implements UserPrivilegeService {
     }
 
     @Override
+    public List<UserPrivilege> assignPrivileges(List<UserPrivilege> userPrivileges) {
+        return userPrivilegeRepo.saveAll(userPrivileges);
+    }
+
+    @Override
     public void removePrivilege(int userId, int privilegeId) {
         userPrivilegeRepo.deleteByUserIdAndPrivilegeId(userId, privilegeId);
     }
 
     @Override
     public List<UserPrivilege> getUserPrivileges(int userId) {
-        return userPrivilegeRepo.findAll().stream()
-                .filter(up -> up.getUserId() == userId)
-                .toList();
+        return userPrivilegeRepo.findByUserId(userId);
     }
 }

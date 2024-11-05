@@ -7,12 +7,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/user-privileges")
 public class UserPrivilegeController {
 
     @Autowired
     private UserPrivilegeService userPrivilegeService;
+
+    @PostMapping("/bulk")
+    public ResponseEntity<List<UserPrivilege>> assignPrivileges(@RequestBody List<UserPrivilege> userPrivileges) {
+        try {
+            List<UserPrivilege> assigned = userPrivilegeService.assignPrivileges(userPrivileges);
+            return new ResponseEntity<>(assigned, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        }
+    }
 
     @PostMapping
     public ResponseEntity<UserPrivilege> assignPrivilege(@RequestBody UserPrivilege userPrivilege) {

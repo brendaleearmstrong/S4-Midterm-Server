@@ -20,6 +20,10 @@ public class PrivilegesService {
         this.privilegesRepo = privilegesRepo;
     }
 
+    public List<Privileges> createPrivileges(List<Privileges> privileges) {
+        return privilegesRepo.saveAll(privileges);
+    }
+
     public Privileges createPrivilege(Privileges privilege) {
         return privilegesRepo.save(privilege);
     }

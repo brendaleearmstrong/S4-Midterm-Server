@@ -1,3 +1,4 @@
+// Mines.java
 package com.misight.model;
 
 import jakarta.persistence.*;
@@ -6,7 +7,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "mines")
-public class Mines {  // Class name matches plural naming convention
+public class Mines {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,11 +17,11 @@ public class Mines {  // Class name matches plural naming convention
     private String company;
     private String location;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "province_id")
     private Provinces province;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "mine_minerals",
             joinColumns = @JoinColumn(name = "mine_id"),
@@ -43,38 +44,67 @@ public class Mines {  // Class name matches plural naming convention
         this.province = province;
     }
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getCompany() { return company; }
-    public void setCompany(String company) { this.company = company; }
-
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-
-    public Provinces getProvince() { return province; }
-    public void setProvince(Provinces province) { this.province = province; }
-
-    public Set<Minerals> getMinerals() { return minerals; }
-    public void setMinerals(Set<Minerals> minerals) { this.minerals = minerals; }
-
-    public Set<EnvironmentalData> getEnvironmentalData() { return environmentalData; }
-    public void setEnvironmentalData(Set<EnvironmentalData> environmentalData) { this.environmentalData = environmentalData; }
-
-    public Set<SafetyData> getSafetyData() { return safetyData; }
-    public void setSafetyData(Set<SafetyData> safetyData) { this.safetyData = safetyData; }
-
-    public void addMineral(Minerals mineral) {
-        this.minerals.add(mineral);
-        mineral.getMines().add(this);
+    public Long getId() {
+        return id;
     }
 
-    public void removeMineral(Minerals mineral) {
-        this.minerals.remove(mineral);
-        mineral.getMines().remove(this);
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Provinces getProvince() {
+        return province;
+    }
+
+    public void setProvince(Provinces province) {
+        this.province = province;
+    }
+
+    public Set<Minerals> getMinerals() {
+        return minerals;
+    }
+
+    public void setMinerals(Set<Minerals> minerals) {
+        this.minerals = minerals;
+    }
+
+    public Set<EnvironmentalData> getEnvironmentalData() {
+        return environmentalData;
+    }
+
+    public void setEnvironmentalData(Set<EnvironmentalData> environmentalData) {
+        this.environmentalData = environmentalData;
+    }
+
+    public Set<SafetyData> getSafetyData() {
+        return safetyData;
+    }
+
+    public void setSafetyData(Set<SafetyData> safetyData) {
+        this.safetyData = safetyData;
     }
 }

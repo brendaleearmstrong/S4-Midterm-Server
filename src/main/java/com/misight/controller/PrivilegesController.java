@@ -20,6 +20,12 @@ public class PrivilegesController {
         this.privilegesService = privilegesService;
     }
 
+    @PostMapping("/bulk")
+    public ResponseEntity<List<Privileges>> createPrivileges(@RequestBody List<Privileges> privileges) {
+        List<Privileges> createdPrivileges = privilegesService.createPrivileges(privileges);
+        return new ResponseEntity<>(createdPrivileges, HttpStatus.CREATED);
+    }
+
     @PostMapping
     public ResponseEntity<Privileges> createPrivilege(@RequestBody Privileges privilege) {
         Privileges createdPrivilege = privilegesService.createPrivilege(privilege);
