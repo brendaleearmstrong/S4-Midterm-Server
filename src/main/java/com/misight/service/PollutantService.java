@@ -1,41 +1,50 @@
 package com.misight.service;
 
+import com.misight.exception.ResourceNotFoundException;
 import com.misight.model.Pollutant;
 import com.misight.repository.PollutantRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PollutantService {
 
-    @Autowired
-    private PollutantRepo pollutantRepo;
+    private final PollutantRepo pollutantRepo;
 
-    public Pollutant addPollutant(Pollutant pollutant) {
-        return pollutantRepo.save(pollutant);
+    @Autowired
+    public PollutantService(PollutantRepo pollutantRepo) {
+        this.pollutantRepo = pollutantRepo;
     }
 
     public List<Pollutant> getAllPollutants() {
         return pollutantRepo.findAll();
     }
 
-    public Optional<Pollutant> getPollutantById(int id) {
-        return pollutantRepo.findById(id);
+    public Pollutant getPollutantById(Long id) {
+        return pollutantRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pollutant not found with id: " + id));
     }
 
-    public Pollutant updatePollutant(int id, Pollutant updatedPollutant) {
-        return pollutantRepo.findById(id).map(pollutant -> {
-            pollutant.setPollutantName(updatedPollutant.getPollutantName());
-            pollutant.setUnit(updatedPollutant.getUnit());
-            pollutant.setDescription(updatedPollutant.getDescription());
-            return pollutantRepo.save(pollutant);
-        }).orElseThrow(() -> new RuntimeException("Pollutant not found"));
+    public Pollutant createPollutant(Pollutant pollutant) {
+        if (pollutantRepo.existsByNameIgnoreCase(pollutant.getName())) {
+            throw new IllegalArgumentException("Pollutant with this name already exists");
+        }
+        return pollutantRepo.save(pollutant);
     }
 
-    public void deletePollutant(int id) {
+    public Pollutant updatePollutant(Long id, Pollutant pollutantDetails) {
+        Pollutant pollutant = getPollutantById(id);
+        pollutant.setName(pollutantDetails.getName());
+        pollutant.setDescription(pollutantDetails.getDescription());
+        return pollutantRepo.save(pollutant);
+    }
+
+    public void deletePollutant(Long id) {
+        if (!pollutantRepo.existsById(id)) {
+            throw new ResourceNotFoundException("Pollutant not found with id: " + id);
+        }
         pollutantRepo.deleteById(id);
     }
 }

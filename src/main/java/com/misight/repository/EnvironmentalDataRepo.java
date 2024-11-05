@@ -7,8 +7,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface EnvironmentalDataRepo extends JpaRepository<EnvironmentalData, Integer> {
-    List<EnvironmentalData> findByDateRecorded(LocalDate date);
-    List<EnvironmentalData> findByMonitoringStation_StationId(Integer stationId);
-    List<EnvironmentalData> findByPollutant_PollutantId(Integer pollutantId);
+public interface EnvironmentalDataRepo extends JpaRepository<EnvironmentalData, Long> {
+    List<EnvironmentalData> findByMonitoringStationId(Long stationId);
+    List<EnvironmentalData> findByPollutantId(Long pollutantId);
+    List<EnvironmentalData> findByDateRecordedBetween(LocalDate startDate, LocalDate endDate);
+    List<EnvironmentalData> findByMonitoringStationIdAndDateRecordedBetween(Long stationId, LocalDate startDate, LocalDate endDate);
 }

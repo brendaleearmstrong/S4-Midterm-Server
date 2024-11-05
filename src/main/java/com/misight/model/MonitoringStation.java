@@ -1,17 +1,18 @@
 package com.misight.model;
+
 import jakarta.persistence.*;
-import java.util.Objects;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "monitoring_stations")
 public class MonitoringStation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "station_id")
-    private Integer stationId;
+    private Long id;
 
-    @Column(name = "station_name", nullable = false)
-    private String stationName;
+    @Column(nullable = false)
+    private String name;
 
     @Column(nullable = false)
     private String location;
@@ -20,62 +21,38 @@ public class MonitoringStation {
     @JoinColumn(name = "province_id")
     private Province province;
 
+    @OneToMany(mappedBy = "monitoringStation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<EnvironmentalData> environmentalData = new HashSet<>();
+
     public MonitoringStation() {}
 
-    public MonitoringStation(String stationName, String location, Province province) {
-        this.stationName = stationName;
+    public MonitoringStation(String name, String location, Province province) {
+        this.name = name;
         this.location = location;
         this.province = province;
     }
 
-    public Integer getStationId() {
-        return stationId;
-    }
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public String getLocation() { return location; }
+    public Province getProvince() { return province; }
+    public Set<EnvironmentalData> getEnvironmentalData() { return environmentalData; }
 
-    public String getStationName() {
-        return stationName;
-    }
-
-    public void setStationName(String stationName) {
-        this.stationName = stationName;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public Province getProvince() {
-        return province;
-    }
-
-    public void setProvince(Province province) {
-        this.province = province;
-    }
-
-    @Override
-    public String toString() {
-        return "MonitoringStation{" +
-                "stationId=" + stationId +
-                ", stationName='" + stationName + '\'' +
-                ", location='" + location + '\'' +
-                ", province=" + (province != null ? province.getProvinceName() : "null") +
-                '}';
-    }
+    public void setId(Long id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setLocation(String location) { this.location = location; }
+    public void setProvince(Province province) { this.province = province; }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof MonitoringStation)) return false;
-        MonitoringStation station = (MonitoringStation) o;
-        return Objects.equals(stationId, station.stationId);
+        MonitoringStation that = (MonitoringStation) o;
+        return id != null && id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(stationId);
+        return getClass().hashCode();
     }
 }
