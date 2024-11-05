@@ -5,51 +5,57 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "minerals")
+@Table(name = "mineral")
 public class Mineral {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long mineralId;
+    private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String mineralName;
+    private String name;
+    private String type;
+    private Double density;
 
     @ManyToMany(mappedBy = "minerals")
     private Set<Mine> mines = new HashSet<>();
 
-    public Mineral() {}
-
-    public Mineral(String mineralName) {
-        this.mineralName = mineralName;
+    public Long getId() {
+        return id;
     }
 
-    public Long getMineralId() {
-        return mineralId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getMineralName() {
-        return mineralName;
+    public String getName() {
+        return name;
     }
 
-    public void setMineralName(String mineralName) {
-        this.mineralName = mineralName;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Double getDensity() {
+        return density;
+    }
+
+    public void setDensity(Double density) {
+        this.density = density;
     }
 
     public Set<Mine> getMines() {
         return mines;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Mineral)) return false;
-        Mineral mineral = (Mineral) o;
-        return mineralId.equals(mineral.mineralId);
-    }
-
-    @Override
-    public int hashCode() {
-        return 31 * mineralId.hashCode();
+    public void setMines(Set<Mine> mines) {
+        this.mines = mines;
     }
 }
