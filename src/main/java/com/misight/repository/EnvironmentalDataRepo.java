@@ -9,7 +9,5 @@ import java.util.List;
 @Repository
 public interface EnvironmentalDataRepo extends JpaRepository<EnvironmentalData, Long> {
     List<EnvironmentalData> findByMonitoringStationId(Long stationId);
-    List<EnvironmentalData> findByPollutantId(Long pollutantId);
     List<EnvironmentalData> findByDateRecordedBetween(LocalDate startDate, LocalDate endDate);
-    List<EnvironmentalData> findByMonitoringStationIdAndDateRecordedBetween(Long stationId, LocalDate startDate, LocalDate endDate);
 }
