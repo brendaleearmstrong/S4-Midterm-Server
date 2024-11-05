@@ -1,14 +1,18 @@
 package com.misight.service;
 
 import com.misight.model.User;
+import com.misight.exception.ResourceNotFoundException;
 import com.misight.repository.UserRepo;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
-import com.misight.exception.ResourceNotFoundException;
 
 @Service
+@Transactional
 public class UserService {
 
     private final UserRepo userRepo;
@@ -18,27 +22,33 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
-    public User registerUser(User user) {
+    public User createUser(User user) {
         return userRepo.save(user);
+    }
+
+    public User getUserById(Long id) {
+        return userRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
     }
 
     public List<User> getAllUsers() {
         return userRepo.findAll();
     }
 
-    public Optional<User> getUserById(Integer id) {
-        return userRepo.findById(id);
+    public User updateUser(Long id, User userDetails) {
+        User user = getUserById(id);
+
+        user.setUsername(userDetails.getUsername());
+        user.setPassword(userDetails.getPassword());
+        user.setPrivileges(userDetails.getPrivileges());
+
+        return userRepo.save(user);
     }
 
-    public void deluser(Integer id) {
+    public void deleteUser(Long id) {
+        if (!userRepo.existsById(id)) {
+            throw new ResourceNotFoundException("User not found with ID: " + id);
+        }
         userRepo.deleteById(id);
-    }
-
-    public Optional<User> findByUsername(String username) {
-        return userRepo.findByUsername(username);
-    }
-
-    public Optional<User> findById(Integer id) {
-        return userRepo.findById(id);
     }
 }

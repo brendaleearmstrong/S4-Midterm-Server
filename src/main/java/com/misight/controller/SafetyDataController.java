@@ -3,17 +3,16 @@ package com.misight.controller;
 import com.misight.model.SafetyData;
 import com.misight.service.SafetyDataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/safety-data")
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/safetydata")
 public class SafetyDataController {
+
     private final SafetyDataService safetyDataService;
 
     @Autowired
@@ -21,44 +20,40 @@ public class SafetyDataController {
         this.safetyDataService = safetyDataService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<SafetyData>> getAllSafetyData() {
-        return ResponseEntity.ok(safetyDataService.getAllSafetyData());
+    @PostMapping("/mines/{mineId}")
+    public ResponseEntity<SafetyData> createSafetyData(@PathVariable Long mineId, @RequestBody SafetyData safetyData) {
+        SafetyData createdSafetyData = safetyDataService.createSafetyData(mineId, safetyData);
+        return ResponseEntity.ok(createdSafetyData);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<SafetyData> getSafetyDataById(@PathVariable Long id) {
-        return ResponseEntity.ok(safetyDataService.getSafetyDataById(id));
+        SafetyData safetyData = safetyDataService.getSafetyDataById(id);
+        return ResponseEntity.ok(safetyData);
     }
 
-    @GetMapping("/mine/{mineId}")
-    public ResponseEntity<List<SafetyData>> getSafetyDataByMine(@PathVariable Long mineId) {
-        return ResponseEntity.ok(safetyDataService.getSafetyDataByMine(mineId));
+    @GetMapping
+    public List<SafetyData> getAllSafetyData() {
+        return safetyDataService.getAllSafetyData();
     }
 
-    @GetMapping("/mine/{mineId}/range")
-    public ResponseEntity<List<SafetyData>> getSafetyDataByDateRange(
+    @GetMapping("/mines/{mineId}")
+    public List<SafetyData> getSafetyDataByMine(@PathVariable Long mineId) {
+        return safetyDataService.getSafetyDataByMine(mineId);
+    }
+
+    @GetMapping("/mines/{mineId}/daterange")
+    public List<SafetyData> getSafetyDataByDateRange(
             @PathVariable Long mineId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        return ResponseEntity.ok(safetyDataService.getSafetyDataByDateRange(mineId, startDate, endDate));
-    }
-
-    @PostMapping("/mine/{mineId}")
-    public ResponseEntity<SafetyData> createSafetyData(
-            @PathVariable Long mineId,
-            @RequestBody SafetyData safetyData) {
-        return new ResponseEntity<>(
-                safetyDataService.createSafetyData(mineId, safetyData),
-                HttpStatus.CREATED
-        );
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate) {
+        return safetyDataService.getSafetyDataByDateRange(mineId, startDate, endDate);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SafetyData> updateSafetyData(
-            @PathVariable Long id,
-            @RequestBody SafetyData safetyData) {
-        return ResponseEntity.ok(safetyDataService.updateSafetyData(id, safetyData));
+    public ResponseEntity<SafetyData> updateSafetyData(@PathVariable Long id, @RequestBody SafetyData safetyDataDetails) {
+        SafetyData updatedSafetyData = safetyDataService.updateSafetyData(id, safetyDataDetails);
+        return ResponseEntity.ok(updatedSafetyData);
     }
 
     @DeleteMapping("/{id}")

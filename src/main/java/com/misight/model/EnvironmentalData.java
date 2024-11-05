@@ -10,52 +10,44 @@ public class EnvironmentalData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private LocalDate dateRecorded;
+    private String pollutantType;
+    private double level;
 
-    @Column(nullable = false)
-    private Double value;
+    @ManyToOne
+    @JoinColumn(name = "station_id")
+    private MonitoringStations monitoringStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pollutant_id", nullable = false)
-    private Pollutant pollutant;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "station_id", nullable = false)
-    private MonitoringStation monitoringStation;
+    @ManyToOne
+    @JoinColumn(name = "mine_id")  // This is the addition
+    private Mines mine;
 
     public EnvironmentalData() {}
 
-    public EnvironmentalData(LocalDate dateRecorded, Double value, Pollutant pollutant, MonitoringStation monitoringStation) {
+    public EnvironmentalData(LocalDate dateRecorded, String pollutantType, double level, MonitoringStations monitoringStation, Mines mine) {
         this.dateRecorded = dateRecorded;
-        this.value = value;
-        this.pollutant = pollutant;
+        this.pollutantType = pollutantType;
+        this.level = level;
         this.monitoringStation = monitoringStation;
+        this.mine = mine;
     }
 
+    // Getters and Setters
     public Long getId() { return id; }
-    public LocalDate getDateRecorded() { return dateRecorded; }
-    public Double getValue() { return value; }
-    public Pollutant getPollutant() { return pollutant; }
-    public MonitoringStation getMonitoringStation() { return monitoringStation; }
-
     public void setId(Long id) { this.id = id; }
+
+    public LocalDate getDateRecorded() { return dateRecorded; }
     public void setDateRecorded(LocalDate dateRecorded) { this.dateRecorded = dateRecorded; }
-    public void setValue(Double value) { this.value = value; }
-    public void setPollutant(Pollutant pollutant) { this.pollutant = pollutant; }
-    public void setMonitoringStation(MonitoringStation monitoringStation) { this.monitoringStation = monitoringStation; }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof EnvironmentalData)) return false;
-        EnvironmentalData that = (EnvironmentalData) o;
-        return id != null && id.equals(that.id);
-    }
+    public String getPollutantType() { return pollutantType; }
+    public void setPollutantType(String pollutantType) { this.pollutantType = pollutantType; }
 
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
+    public double getLevel() { return level; }
+    public void setLevel(double level) { this.level = level; }
+
+    public MonitoringStations getMonitoringStation() { return monitoringStation; }
+    public void setMonitoringStation(MonitoringStations monitoringStation) { this.monitoringStation = monitoringStation; }
+
+    public Mines getMine() { return mine; }
+    public void setMine(Mines mine) { this.mine = mine; }
 }
-
