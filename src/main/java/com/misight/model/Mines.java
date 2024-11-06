@@ -1,4 +1,3 @@
-// Mines.java
 package com.misight.model;
 
 import jakarta.persistence.*;
