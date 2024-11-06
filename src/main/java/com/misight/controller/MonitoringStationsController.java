@@ -7,39 +7,59 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/monitoring-stations")
 public class MonitoringStationsController {
 
     @Autowired
-    private MonitoringStationsService service;
+    private MonitoringStationsService monitoringStationsService;
 
+    // Get all monitoring stations
     @GetMapping
-    public List<MonitoringStations> getAllStations() {
-        return service.getAllStations();
+    public List<MonitoringStations> getAllMonitoringStations() {
+        return monitoringStationsService.getAllMonitoringStations();
     }
 
+    // Get a monitoring station by ID
     @GetMapping("/{id}")
-    public ResponseEntity<MonitoringStations> getStationById(@PathVariable Long id) {
-        MonitoringStations station = service.getStationById(id);
-        return station != null ? ResponseEntity.ok(station) : ResponseEntity.notFound().build();
+    public ResponseEntity<MonitoringStations> getMonitoringStationById(@PathVariable Long id) {
+        Optional<MonitoringStations> station = monitoringStationsService.getMonitoringStationById(id);
+        return station.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    // Create a new monitoring station with a province association
     @PostMapping
-    public MonitoringStations createStation(@RequestBody MonitoringStations station) {
-        return service.createStation(station);
+    public ResponseEntity<MonitoringStations> createMonitoringStation(
+            @RequestBody MonitoringStations station,
+            @RequestParam Long provinceId) {
+        MonitoringStations createdStation = monitoringStationsService.createMonitoringStation(station, provinceId);
+        return ResponseEntity.ok(createdStation);
     }
 
+    // Update an existing monitoring station by ID
     @PutMapping("/{id}")
-    public ResponseEntity<MonitoringStations> updateStation(@PathVariable Long id, @RequestBody MonitoringStations station) {
-        MonitoringStations updatedStation = service.updateStation(id, station);
-        return updatedStation != null ? ResponseEntity.ok(updatedStation) : ResponseEntity.notFound().build();
+    public ResponseEntity<MonitoringStations> updateMonitoringStation(
+            @PathVariable Long id,
+            @RequestBody MonitoringStations stationDetails,
+            @RequestParam(required = false) Long provinceId) {
+        try {
+            MonitoringStations updatedStation = monitoringStationsService.updateMonitoringStation(id, stationDetails, provinceId);
+            return ResponseEntity.ok(updatedStation);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
+    // Delete a monitoring station by ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
-        service.deleteStation(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deleteMonitoringStation(@PathVariable Long id) {
+        try {
+            monitoringStationsService.deleteMonitoringStation(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

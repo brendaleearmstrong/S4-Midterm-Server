@@ -1,34 +1,48 @@
 package com.misight.model;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "provinces")
-public class Provinces {  // Class name is plural to match file name
+public class Provinces {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-    private String abbreviation;
 
-    // Default constructor
-    public Provinces() {}
+    @OneToMany(mappedBy = "province")
+    @JsonManagedReference
+    private List<MonitoringStations> monitoringStations = new ArrayList<>();
 
-    // Parameterized constructor
-    public Provinces(String name, String abbreviation) {
-        this.name = name;
-        this.abbreviation = abbreviation;
+    public Long getId() {
+        return id;
     }
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
 
-    public String getAbbreviation() { return abbreviation; }
-    public void setAbbreviation(String abbreviation) { this.abbreviation = abbreviation; }
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<MonitoringStations> getMonitoringStations() {
+        return monitoringStations;
+    }
+
+    public void setMonitoringStations(List<MonitoringStations> monitoringStations) {
+        this.monitoringStations = monitoringStations;
+    }
 }

@@ -6,42 +6,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProvincesService {
 
     @Autowired
-    private ProvincesRepo repo;
+    private ProvincesRepo provinceRepo;
 
-    // Method to retrieve all provinces
     public List<Provinces> getAllProvinces() {
-        return repo.findAll();
+        return provinceRepo.findAll();
     }
 
-    // Method to get a province by ID
     public Provinces getProvinceById(Long id) {
-        return repo.findById(id).orElse(null);
+        return provinceRepo.findById(id).orElse(null);
     }
 
-    // Method to create a new province
     public Provinces createProvince(Provinces province) {
-        return repo.save(province);
+        return provinceRepo.save(province);
     }
 
-    // Method to update an existing province
     public Provinces updateProvince(Long id, Provinces province) {
-        Optional<Provinces> existingProvince = repo.findById(id);
-        if (existingProvince.isPresent()) {
+        if (provinceRepo.existsById(id)) {
             province.setId(id);
-            return repo.save(province);
-        } else {
-            return null;
+            return provinceRepo.save(province);
         }
+        return null;
     }
 
-    // Method to delete a province by ID
     public void deleteProvince(Long id) {
-        repo.deleteById(id);
+        provinceRepo.deleteById(id);
     }
 }

@@ -1,7 +1,7 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "environmental_data")
@@ -10,44 +10,138 @@ public class EnvironmentalData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate dateRecorded;
-    private String pollutantType;
-    private double level;
+    @ManyToOne
+    @JoinColumn(name = "pollutant_id", nullable = false)
+    private Pollutants pollutant;
 
     @ManyToOne
-    @JoinColumn(name = "station_id")
+    @JoinColumn(name = "station_id", nullable = false)
     private MonitoringStations monitoringStation;
 
     @ManyToOne
-    @JoinColumn(name = "mine_id")  // This is the addition
+    @JoinColumn(name = "mine_id", nullable = false)
     private Mines mine;
 
+    @Column(name = "measured_value", nullable = false)
+    private Double measuredValue;
+
+    @Column(name = "measurement_date", nullable = false)
+    private LocalDateTime measurementDate;
+
+    private String notes;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    // Default constructor
     public EnvironmentalData() {}
 
-    public EnvironmentalData(LocalDate dateRecorded, String pollutantType, double level, MonitoringStations monitoringStation, Mines mine) {
-        this.dateRecorded = dateRecorded;
-        this.pollutantType = pollutantType;
-        this.level = level;
+    // Constructor with essential fields
+    public EnvironmentalData(Pollutants pollutant, MonitoringStations monitoringStation,
+                             Mines mine, Double measuredValue, LocalDateTime measurementDate) {
+        this.pollutant = pollutant;
         this.monitoringStation = monitoringStation;
         this.mine = mine;
+        this.measuredValue = measuredValue;
+        this.measurementDate = measurementDate;
+    }
+
+    // Full constructor
+    public EnvironmentalData(Pollutants pollutant, MonitoringStations monitoringStation,
+                             Mines mine, Double measuredValue, LocalDateTime measurementDate,
+                             String notes) {
+        this.pollutant = pollutant;
+        this.monitoringStation = monitoringStation;
+        this.mine = mine;
+        this.measuredValue = measuredValue;
+        this.measurementDate = measurementDate;
+        this.notes = notes;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public LocalDate getDateRecorded() { return dateRecorded; }
-    public void setDateRecorded(LocalDate dateRecorded) { this.dateRecorded = dateRecorded; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getPollutantType() { return pollutantType; }
-    public void setPollutantType(String pollutantType) { this.pollutantType = pollutantType; }
+    public Pollutants getPollutant() {
+        return pollutant;
+    }
 
-    public double getLevel() { return level; }
-    public void setLevel(double level) { this.level = level; }
+    public void setPollutant(Pollutants pollutant) {
+        this.pollutant = pollutant;
+    }
 
-    public MonitoringStations getMonitoringStation() { return monitoringStation; }
-    public void setMonitoringStation(MonitoringStations monitoringStation) { this.monitoringStation = monitoringStation; }
+    public MonitoringStations getMonitoringStation() {
+        return monitoringStation;
+    }
 
-    public Mines getMine() { return mine; }
-    public void setMine(Mines mine) { this.mine = mine; }
+    public void setMonitoringStation(MonitoringStations monitoringStation) {
+        this.monitoringStation = monitoringStation;
+    }
+
+    public Mines getMine() {
+        return mine;
+    }
+
+    public void setMine(Mines mine) {
+        this.mine = mine;
+    }
+
+    public Double getMeasuredValue() {
+        return measuredValue;
+    }
+
+    public void setMeasuredValue(Double measuredValue) {
+        this.measuredValue = measuredValue;
+    }
+
+    public LocalDateTime getMeasurementDate() {
+        return measurementDate;
+    }
+
+    public void setMeasurementDate(LocalDateTime measurementDate) {
+        this.measurementDate = measurementDate;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

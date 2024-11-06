@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MonitoringStationsRepo extends JpaRepository<MonitoringStations, Long> {
-    MonitoringStations findByName(String name);
 }
+
