@@ -1,8 +1,10 @@
+// Pollutants.java
 package com.misight.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "pollutants")
@@ -32,40 +34,19 @@ public class Pollutants {
     @Column(name = "measurement_frequency", nullable = false)
     private String measurementFrequency;
 
+    @ManyToMany(mappedBy = "pollutants")
+    private Set<MonitoringStations> monitoringStations = new HashSet<>();
+
+    @OneToMany(mappedBy = "pollutant")
+    private Set<EnvironmentalData> measurements = new HashSet<>();
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "pollutant")
-    private List<EnvironmentalData> measurements;
-
-    // Default constructor
     public Pollutants() {}
-
-    // Constructor with essential fields
-    public Pollutants(String name, String category, String unit, Double benchmarkValue,
-                      String benchmarkType, String measurementFrequency) {
-        this.name = name;
-        this.category = category;
-        this.unit = unit;
-        this.benchmarkValue = benchmarkValue;
-        this.benchmarkType = benchmarkType;
-        this.measurementFrequency = measurementFrequency;
-    }
-
-    // Full constructor
-    public Pollutants(String name, String category, String unit, Double benchmarkValue,
-                      String benchmarkType, String description, String measurementFrequency) {
-        this.name = name;
-        this.category = category;
-        this.unit = unit;
-        this.benchmarkValue = benchmarkValue;
-        this.benchmarkType = benchmarkType;
-        this.description = description;
-        this.measurementFrequency = measurementFrequency;
-    }
 
     @PrePersist
     protected void onCreate() {
@@ -78,92 +59,36 @@ public class Pollutants {
         updatedAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getName() {
-        return name;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getUnit() { return unit; }
+    public void setUnit(String unit) { this.unit = unit; }
 
-    public String getCategory() {
-        return category;
-    }
+    public Double getBenchmarkValue() { return benchmarkValue; }
+    public void setBenchmarkValue(Double value) { this.benchmarkValue = value; }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+    public String getBenchmarkType() { return benchmarkType; }
+    public void setBenchmarkType(String type) { this.benchmarkType = type; }
 
-    public String getUnit() {
-        return unit;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
+    public String getMeasurementFrequency() { return measurementFrequency; }
+    public void setMeasurementFrequency(String frequency) { this.measurementFrequency = frequency; }
 
-    public Double getBenchmarkValue() {
-        return benchmarkValue;
-    }
+    public Set<MonitoringStations> getMonitoringStations() { return monitoringStations; }
+    public void setMonitoringStations(Set<MonitoringStations> stations) { this.monitoringStations = stations; }
 
-    public void setBenchmarkValue(Double benchmarkValue) {
-        this.benchmarkValue = benchmarkValue;
-    }
+    public Set<EnvironmentalData> getMeasurements() { return measurements; }
+    public void setMeasurements(Set<EnvironmentalData> measurements) { this.measurements = measurements; }
 
-    public String getBenchmarkType() {
-        return benchmarkType;
-    }
-
-    public void setBenchmarkType(String benchmarkType) {
-        this.benchmarkType = benchmarkType;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getMeasurementFrequency() {
-        return measurementFrequency;
-    }
-
-    public void setMeasurementFrequency(String measurementFrequency) {
-        this.measurementFrequency = measurementFrequency;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public List<EnvironmentalData> getMeasurements() {
-        return measurements;
-    }
-
-    public void setMeasurements(List<EnvironmentalData> measurements) {
-        this.measurements = measurements;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

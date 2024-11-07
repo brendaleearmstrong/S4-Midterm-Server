@@ -36,30 +36,7 @@ public class EnvironmentalData {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Default constructor
     public EnvironmentalData() {}
-
-    // Constructor with essential fields
-    public EnvironmentalData(Pollutants pollutant, MonitoringStations monitoringStation,
-                             Mines mine, Double measuredValue, LocalDateTime measurementDate) {
-        this.pollutant = pollutant;
-        this.monitoringStation = monitoringStation;
-        this.mine = mine;
-        this.measuredValue = measuredValue;
-        this.measurementDate = measurementDate;
-    }
-
-    // Full constructor
-    public EnvironmentalData(Pollutants pollutant, MonitoringStations monitoringStation,
-                             Mines mine, Double measuredValue, LocalDateTime measurementDate,
-                             String notes) {
-        this.pollutant = pollutant;
-        this.monitoringStation = monitoringStation;
-        this.mine = mine;
-        this.measuredValue = measuredValue;
-        this.measurementDate = measurementDate;
-        this.notes = notes;
-    }
 
     @PrePersist
     protected void onCreate() {
@@ -72,76 +49,27 @@ public class EnvironmentalData {
         updatedAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Pollutants getPollutant() { return pollutant; }
+    public void setPollutant(Pollutants pollutant) { this.pollutant = pollutant; }
 
-    public Pollutants getPollutant() {
-        return pollutant;
-    }
+    public MonitoringStations getMonitoringStation() { return monitoringStation; }
+    public void setMonitoringStation(MonitoringStations station) { this.monitoringStation = station; }
 
-    public void setPollutant(Pollutants pollutant) {
-        this.pollutant = pollutant;
-    }
+    public Mines getMine() { return mine; }
+    public void setMine(Mines mine) { this.mine = mine; }
 
-    public MonitoringStations getMonitoringStation() {
-        return monitoringStation;
-    }
+    public Double getMeasuredValue() { return measuredValue; }
+    public void setMeasuredValue(Double value) { this.measuredValue = value; }
 
-    public void setMonitoringStation(MonitoringStations monitoringStation) {
-        this.monitoringStation = monitoringStation;
-    }
+    public LocalDateTime getMeasurementDate() { return measurementDate; }
+    public void setMeasurementDate(LocalDateTime date) { this.measurementDate = date; }
 
-    public Mines getMine() {
-        return mine;
-    }
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
 
-    public void setMine(Mines mine) {
-        this.mine = mine;
-    }
-
-    public Double getMeasuredValue() {
-        return measuredValue;
-    }
-
-    public void setMeasuredValue(Double measuredValue) {
-        this.measuredValue = measuredValue;
-    }
-
-    public LocalDateTime getMeasurementDate() {
-        return measurementDate;
-    }
-
-    public void setMeasurementDate(LocalDateTime measurementDate) {
-        this.measurementDate = measurementDate;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

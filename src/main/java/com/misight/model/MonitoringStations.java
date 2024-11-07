@@ -1,7 +1,7 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.util.List;
 
 @Entity
 public class MonitoringStations {
@@ -9,17 +9,20 @@ public class MonitoringStations {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String location;
 
-    private String name;
-
     @ManyToOne
-    @JoinColumn(name = "province_id", nullable = false)
-    @JsonBackReference
+    @JoinColumn(name = "province_id")
     private Provinces province;
 
-    // Getters and setters
+    @ManyToMany
+    @JoinTable(
+            name = "station_pollutants",
+            joinColumns = @JoinColumn(name = "station_id"),
+            inverseJoinColumns = @JoinColumn(name = "pollutant_id")
+    )
+    private List<Pollutants> pollutants;
+
     public Long getId() {
         return id;
     }
@@ -36,19 +39,19 @@ public class MonitoringStations {
         this.location = location;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Provinces getProvince() {
         return province;
     }
 
     public void setProvince(Provinces province) {
         this.province = province;
+    }
+
+    public List<Pollutants> getPollutants() {
+        return pollutants;
+    }
+
+    public void setPollutants(List<Pollutants> pollutants) {
+        this.pollutants = pollutants;
     }
 }

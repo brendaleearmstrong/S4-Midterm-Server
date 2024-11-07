@@ -1,65 +1,63 @@
 package com.misight.controller;
 
 import com.misight.model.MonitoringStations;
+import com.misight.model.Pollutants;
 import com.misight.service.MonitoringStationsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/monitoring-stations")
+@RequestMapping("/monitoringStations")
 public class MonitoringStationsController {
 
     @Autowired
-    private MonitoringStationsService monitoringStationsService;
+    private MonitoringStationsService service;
 
-    // Get all monitoring stations
-    @GetMapping
-    public List<MonitoringStations> getAllMonitoringStations() {
-        return monitoringStationsService.getAllMonitoringStations();
-    }
-
-    // Get a monitoring station by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<MonitoringStations> getMonitoringStationById(@PathVariable Long id) {
-        Optional<MonitoringStations> station = monitoringStationsService.getMonitoringStationById(id);
-        return station.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    // Create a new monitoring station with a province association
     @PostMapping
-    public ResponseEntity<MonitoringStations> createMonitoringStation(
-            @RequestBody MonitoringStations station,
-            @RequestParam Long provinceId) {
-        MonitoringStations createdStation = monitoringStationsService.createMonitoringStation(station, provinceId);
-        return ResponseEntity.ok(createdStation);
+    public MonitoringStations createStation(@RequestBody MonitoringStations station) {
+        return service.createStation(station);
     }
 
-    // Update an existing monitoring station by ID
+    @GetMapping
+    public List<MonitoringStations> getAllStations() {
+        return service.getAllStations();
+    }
+
+    @GetMapping("/{id}")
+    public MonitoringStations getStationById(@PathVariable Long id) {
+        return service.getStationById(id);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<MonitoringStations> updateMonitoringStation(
-            @PathVariable Long id,
-            @RequestBody MonitoringStations stationDetails,
-            @RequestParam(required = false) Long provinceId) {
-        try {
-            MonitoringStations updatedStation = monitoringStationsService.updateMonitoringStation(id, stationDetails, provinceId);
-            return ResponseEntity.ok(updatedStation);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public MonitoringStations updateStation(@PathVariable Long id, @RequestBody MonitoringStations stationDetails) {
+        return service.updateStation(id, stationDetails);
     }
 
-    // Delete a monitoring station by ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMonitoringStation(@PathVariable Long id) {
-        try {
-            monitoringStationsService.deleteMonitoringStation(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.notFound().build();
-        }
+    public String deleteStation(@PathVariable Long id) {
+        return service.deleteStation(id);
+    }
+
+    @GetMapping("/province/{provinceId}")
+    public List<MonitoringStations> getStationsByProvince(@PathVariable Long provinceId) {
+        return service.getStationsByProvince(provinceId);
+    }
+
+    @GetMapping("/location/{location}")
+    public List<MonitoringStations> getStationsByLocation(@PathVariable String location) {
+        return service.getStationsByLocation(location);
+    }
+
+    @PutMapping("/{stationId}/pollutants")
+    public MonitoringStations updateStationPollutants(
+            @PathVariable Long stationId, @RequestBody List<Long> pollutantIds) {
+        return service.updateStationPollutants(stationId, pollutantIds);
+    }
+
+    @GetMapping("/{stationId}/pollutants")
+    public List<Pollutants> getStationPollutants(@PathVariable Long stationId) {
+        return service.getStationPollutants(stationId);
     }
 }

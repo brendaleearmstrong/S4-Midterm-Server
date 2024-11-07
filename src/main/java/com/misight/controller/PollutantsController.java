@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/pollutants")
 public class PollutantsController {
-
     @Autowired
     private PollutantsService service;
 
@@ -22,8 +21,14 @@ public class PollutantsController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Pollutants> getPollutantById(@PathVariable Long id) {
-        Pollutants pollutant = service.getPollutantById(id);
-        return pollutant != null ? ResponseEntity.ok(pollutant) : ResponseEntity.notFound().build();
+        return service.getPollutantById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/category/{category}")
+    public List<Pollutants> getPollutantsByCategory(@PathVariable String category) {
+        return service.getPollutantsByCategory(category);
     }
 
     @GetMapping("/name/{name}")
@@ -31,25 +36,28 @@ public class PollutantsController {
         return service.getPollutantsByName(name);
     }
 
-    @GetMapping("/type/{type}")
-    public List<Pollutants> getPollutantsByType(@PathVariable String type) {
-        return service.getPollutantsByType(type);
-    }
-
     @PostMapping
-    public Pollutants createPollutant(@RequestBody Pollutants pollutant) {
-        return service.createPollutant(pollutant);
+    public ResponseEntity<?> createPollutant(@RequestBody Pollutants pollutant) {
+        try {
+            Pollutants created = service.createPollutant(pollutant);
+            return ResponseEntity.ok(created);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Pollutants> updatePollutant(@PathVariable Long id, @RequestBody Pollutants pollutant) {
-        Pollutants updatedPollutant = service.updatePollutant(id, pollutant);
-        return updatedPollutant != null ? ResponseEntity.ok(updatedPollutant) : ResponseEntity.notFound().build();
+        return service.updatePollutant(id, pollutant)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePollutant(@PathVariable Long id) {
-        service.deletePollutant(id);
-        return ResponseEntity.noContent().build();
+        if (service.deletePollutant(id)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

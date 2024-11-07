@@ -3,10 +3,12 @@ package com.misight.controller;
 import com.misight.model.EnvironmentalData;
 import com.misight.service.EnvironmentalDataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/environmental-data")
@@ -22,8 +24,9 @@ public class EnvironmentalDataController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EnvironmentalData> getDataById(@PathVariable Long id) {
-        EnvironmentalData data = service.getDataById(id);
-        return data != null ? ResponseEntity.ok(data) : ResponseEntity.notFound().build();
+        return service.getDataById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/station/{stationId}")
@@ -31,20 +34,35 @@ public class EnvironmentalDataController {
         return service.getDataByStation(stationId);
     }
 
+    @GetMapping("/mine/{mineId}")
+    public List<EnvironmentalData> getDataByMine(@PathVariable Long mineId) {
+        return service.getDataByMine(mineId);
+    }
+
+    @GetMapping("/date-range")
+    public List<EnvironmentalData> getDataByDateRange(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+        return service.getDataByDateRange(start, end);
+    }
+
     @PostMapping
-    public EnvironmentalData createData(@RequestBody EnvironmentalData data) {
-        return service.createData(data);
+    public ResponseEntity<EnvironmentalData> createData(@RequestBody EnvironmentalData data) {
+        return ResponseEntity.ok(service.createData(data));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<EnvironmentalData> updateData(@PathVariable Long id, @RequestBody EnvironmentalData data) {
-        EnvironmentalData updatedData = service.updateData(id, data);
-        return updatedData != null ? ResponseEntity.ok(updatedData) : ResponseEntity.notFound().build();
+        return service.updateData(id, data)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteData(@PathVariable Long id) {
-        service.deleteData(id);
-        return ResponseEntity.noContent().build();
+        if (service.deleteData(id)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

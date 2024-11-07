@@ -1,9 +1,9 @@
 package com.misight.service;
 
 import com.misight.model.MonitoringStations;
-import com.misight.model.Provinces;
+import com.misight.model.Pollutants;
 import com.misight.repository.MonitoringStationsRepo;
-import com.misight.repository.ProvincesRepo;
+import com.misight.repository.PollutantsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,41 +17,61 @@ public class MonitoringStationsService {
     private MonitoringStationsRepo monitoringStationsRepo;
 
     @Autowired
-    private ProvincesRepo provincesRepo;
+    private PollutantsRepo pollutantsRepo;
 
-    public List<MonitoringStations> getAllMonitoringStations() {
+    public MonitoringStations createStation(MonitoringStations station) {
+        return monitoringStationsRepo.save(station);
+    }
+
+    public List<MonitoringStations> getAllStations() {
         return monitoringStationsRepo.findAll();
     }
 
-    public Optional<MonitoringStations> getMonitoringStationById(Long id) {
-        return monitoringStationsRepo.findById(id);
+    public MonitoringStations getStationById(Long id) {
+        return monitoringStationsRepo.findById(id).orElse(null);
     }
 
-    public MonitoringStations createMonitoringStation(MonitoringStations station, Long provinceId) {
-        Provinces province = provincesRepo.findById(provinceId)
-                .orElseThrow(() -> new IllegalArgumentException("Province not found with id: " + provinceId));
-        station.setProvince(province);
-        return monitoringStationsRepo.save(station);
-    }
-
-    public MonitoringStations updateMonitoringStation(Long id, MonitoringStations stationDetails, Long provinceId) {
-        MonitoringStations station = monitoringStationsRepo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Monitoring Station not found with id: " + id));
-
-        station.setLocation(stationDetails.getLocation());
-        station.setName(stationDetails.getName());
-
-        // Update the province if a new provinceId is provided
-        if (provinceId != null) {
-            Provinces province = provincesRepo.findById(provinceId)
-                    .orElseThrow(() -> new IllegalArgumentException("Province not found with id: " + provinceId));
-            station.setProvince(province);
+    public MonitoringStations updateStation(Long id, MonitoringStations stationDetails) {
+        Optional<MonitoringStations> station = monitoringStationsRepo.findById(id);
+        if (station.isPresent()) {
+            MonitoringStations existingStation = station.get();
+            existingStation.setLocation(stationDetails.getLocation());
+            existingStation.setProvince(stationDetails.getProvince());
+            existingStation.setPollutants(stationDetails.getPollutants());
+            return monitoringStationsRepo.save(existingStation);
         }
-
-        return monitoringStationsRepo.save(station);
+        return null;
     }
 
-    public void deleteMonitoringStation(Long id) {
-        monitoringStationsRepo.deleteById(id);
+    public String deleteStation(Long id) {
+        if (monitoringStationsRepo.existsById(id)) {
+            monitoringStationsRepo.deleteById(id);
+            return "Monitoring station deleted successfully.";
+        }
+        return "Monitoring station not found.";
+    }
+
+    public List<MonitoringStations> getStationsByProvince(Long provinceId) {
+        return monitoringStationsRepo.findByProvinceId(provinceId);
+    }
+
+    public List<MonitoringStations> getStationsByLocation(String location) {
+        return monitoringStationsRepo.findByLocation(location);
+    }
+
+    public MonitoringStations updateStationPollutants(Long stationId, List<Long> pollutantIds) {
+        Optional<MonitoringStations> station = monitoringStationsRepo.findById(stationId);
+        if (station.isPresent()) {
+            List<Pollutants> pollutants = pollutantsRepo.findAllById(pollutantIds);
+            MonitoringStations updatedStation = station.get();
+            updatedStation.setPollutants(pollutants);
+            return monitoringStationsRepo.save(updatedStation);
+        }
+        return null;
+    }
+
+    public List<Pollutants> getStationPollutants(Long stationId) {
+        Optional<MonitoringStations> station = monitoringStationsRepo.findById(stationId);
+        return station.map(MonitoringStations::getPollutants).orElse(null);
     }
 }
