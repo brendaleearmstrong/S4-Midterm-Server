@@ -1,4 +1,3 @@
-// Pollutants.java
 package com.misight.model;
 
 import jakarta.persistence.*;
@@ -8,7 +7,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "pollutants")
-public class Pollutants {
+public class
+
+Pollutants {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

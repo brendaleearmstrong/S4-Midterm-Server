@@ -1,30 +1,42 @@
 package com.misight.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "safety_data")
 public class SafetyData {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mine_id", nullable = false)
+    @JoinColumn(name = "mine_id", nullable = true)
+    @JsonProperty("mine_id")
     private Mines mine;
 
-    @Column(nullable = false)
+    @Column(name = "date_recorded", nullable = false)
+    @JsonProperty("dateRecorded")
     private LocalDate dateRecorded;
 
+    @Column(name = "lost_time_incidents")
+    @JsonProperty("lostTimeIncidents")
     private int lostTimeIncidents;
+
+    @Column(name = "near_misses")
+    @JsonProperty("nearMisses")
     private int nearMisses;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "safety_level")
+    @JsonProperty("safetyLevel")
     private SafetyLevel safetyLevel;
 
     public enum SafetyLevel {
-        GOOD, FAIR, NEEDS_IMPROVEMENT
+        GOOD, FAIR, NEEDS_IMPROVEMENT, EXCELLENT, CRITICAL
     }
 
     public SafetyData() {}
