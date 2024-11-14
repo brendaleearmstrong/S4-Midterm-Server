@@ -1,63 +1,79 @@
 package com.misight.controller;
 
 import com.misight.model.MonitoringStations;
-import com.misight.model.Pollutants;
 import com.misight.service.MonitoringStationsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
-@RequestMapping("/monitoringStations")
+@RequestMapping("/api/monitoringstations")
+@CrossOrigin(origins = "*")
 public class MonitoringStationsController {
 
-    @Autowired
-    private MonitoringStationsService service;
+    private final MonitoringStationsService service;
 
-    @PostMapping
-    public MonitoringStations createStation(@RequestBody MonitoringStations station) {
-        return service.createStation(station);
+    @Autowired
+    public MonitoringStationsController(MonitoringStationsService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<MonitoringStations> getAllStations() {
-        return service.getAllStations();
+    public ResponseEntity<List<MonitoringStations>> getAllStations() {
+        try {
+            List<MonitoringStations> stations = service.getAllStations();
+            if (stations.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(stations, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/{id}")
-    public MonitoringStations getStationById(@PathVariable Long id) {
-        return service.getStationById(id);
+    public ResponseEntity<MonitoringStations> getStationById(@PathVariable Long id) {
+        try {
+            return service.getStationById(id)
+                    .map(station -> new ResponseEntity<>(station, HttpStatus.OK))
+                    .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<MonitoringStations> createStation(@RequestBody MonitoringStations station) {
+        try {
+            MonitoringStations newStation = service.createStation(station);
+            return new ResponseEntity<>(newStation, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("/{id}")
-    public MonitoringStations updateStation(@PathVariable Long id, @RequestBody MonitoringStations stationDetails) {
-        return service.updateStation(id, stationDetails);
+    public ResponseEntity<MonitoringStations> updateStation(@PathVariable Long id, @RequestBody MonitoringStations station) {
+        try {
+            return service.updateStation(id, station)
+                    .map(updatedStation -> new ResponseEntity<>(updatedStation, HttpStatus.OK))
+                    .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/{id}")
-    public String deleteStation(@PathVariable Long id) {
-        return service.deleteStation(id);
-    }
-
-    @GetMapping("/province/{provinceId}")
-    public List<MonitoringStations> getStationsByProvince(@PathVariable Long provinceId) {
-        return service.getStationsByProvince(provinceId);
-    }
-
-    @GetMapping("/location/{location}")
-    public List<MonitoringStations> getStationsByLocation(@PathVariable String location) {
-        return service.getStationsByLocation(location);
-    }
-
-    @PutMapping("/{stationId}/pollutants")
-    public MonitoringStations updateStationPollutants(
-            @PathVariable Long stationId, @RequestBody List<Long> pollutantIds) {
-        return service.updateStationPollutants(stationId, pollutantIds);
-    }
-
-    @GetMapping("/{stationId}/pollutants")
-    public List<Pollutants> getStationPollutants(@PathVariable Long stationId) {
-        return service.getStationPollutants(stationId);
+    public ResponseEntity<HttpStatus> deleteStation(@PathVariable Long id) {
+        try {
+            boolean deleted = service.deleteStation(id);
+            return deleted ?
+                    new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                    new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

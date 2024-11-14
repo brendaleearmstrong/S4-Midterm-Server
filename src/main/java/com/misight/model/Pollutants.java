@@ -1,15 +1,13 @@
 package com.misight.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "pollutants")
-public class
-
-Pollutants {
+public class Pollutants {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,67 +27,77 @@ Pollutants {
     @Column(name = "benchmark_type", nullable = false)
     private String benchmarkType;
 
-    @Column(length = 1000)
-    private String description;
-
-    @Column(name = "measurement_frequency", nullable = false)
-    private String measurementFrequency;
-
     @ManyToMany(mappedBy = "pollutants")
+    @JsonIgnoreProperties({"pollutants", "province"})
     private Set<MonitoringStations> monitoringStations = new HashSet<>();
 
-    @OneToMany(mappedBy = "pollutant")
+    @OneToMany(mappedBy = "pollutant", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("pollutant")
     private Set<EnvironmentalData> measurements = new HashSet<>();
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     public Pollutants() {}
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+    public Long getId() {
+        return id;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getName() {
+        return name;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public String getCategory() {
+        return category;
+    }
 
-    public String getUnit() { return unit; }
-    public void setUnit(String unit) { this.unit = unit; }
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
-    public Double getBenchmarkValue() { return benchmarkValue; }
-    public void setBenchmarkValue(Double value) { this.benchmarkValue = value; }
+    public String getUnit() {
+        return unit;
+    }
 
-    public String getBenchmarkType() { return benchmarkType; }
-    public void setBenchmarkType(String type) { this.benchmarkType = type; }
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public Double getBenchmarkValue() {
+        return benchmarkValue;
+    }
 
-    public String getMeasurementFrequency() { return measurementFrequency; }
-    public void setMeasurementFrequency(String frequency) { this.measurementFrequency = frequency; }
+    public void setBenchmarkValue(Double benchmarkValue) {
+        this.benchmarkValue = benchmarkValue;
+    }
 
-    public Set<MonitoringStations> getMonitoringStations() { return monitoringStations; }
-    public void setMonitoringStations(Set<MonitoringStations> stations) { this.monitoringStations = stations; }
+    public String getBenchmarkType() {
+        return benchmarkType;
+    }
 
-    public Set<EnvironmentalData> getMeasurements() { return measurements; }
-    public void setMeasurements(Set<EnvironmentalData> measurements) { this.measurements = measurements; }
+    public void setBenchmarkType(String benchmarkType) {
+        this.benchmarkType = benchmarkType;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public Set<MonitoringStations> getMonitoringStations() {
+        return monitoringStations;
+    }
+
+    public void setMonitoringStations(Set<MonitoringStations> monitoringStations) {
+        this.monitoringStations = monitoringStations;
+    }
+
+    public Set<EnvironmentalData> getMeasurements() {
+        return measurements;
+    }
+
+    public void setMeasurements(Set<EnvironmentalData> measurements) {
+        this.measurements = measurements;
+    }
 }
