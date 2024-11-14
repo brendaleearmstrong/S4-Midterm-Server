@@ -1,4 +1,3 @@
-// SafetyDataRepo.java
 package com.misight.repository;
 
 import com.misight.model.SafetyData;

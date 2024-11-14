@@ -34,7 +34,6 @@ public class EnvironmentalData {
 
     private String notes;
 
-    // Constructors
     public EnvironmentalData() {}
 
     public EnvironmentalData(Pollutants pollutant, MonitoringStations monitoringStation,
@@ -46,7 +45,6 @@ public class EnvironmentalData {
         this.measurementDate = measurementDate;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

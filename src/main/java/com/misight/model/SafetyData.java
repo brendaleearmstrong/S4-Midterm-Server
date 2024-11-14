@@ -1,47 +1,34 @@
 package com.misight.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.misight.model.Mines;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "safety_data")
 public class SafetyData {
+
+    public enum SafetyLevel {
+        CRITICAL,
+        FAIR,
+        GOOD,
+        EXCELLENT
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mine_id")
-    @JsonIgnoreProperties({"safetyData", "environmentalData", "minerals", "province"})
-    private Mines mine;
-
-    @Column(name = "date_recorded", nullable = false)
     private LocalDate dateRecorded;
-
-    @Column(name = "lost_time_incidents")
     private int lostTimeIncidents;
-
-    @Column(name = "near_misses")
     private int nearMisses;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "safety_level")
     private SafetyLevel safetyLevel;
 
-    public enum SafetyLevel {
-        CRITICAL, FAIR, GOOD, EXCELLENT
-    }
+    @ManyToOne
+    @JoinColumn(name = "mine_id")
+    private Mines mine;
 
-    public SafetyData() {}
-
-    public SafetyData(LocalDate dateRecorded, int lostTimeIncidents, int nearMisses, SafetyLevel safetyLevel, Mines mine) {
-        this.dateRecorded = dateRecorded;
-        this.lostTimeIncidents = lostTimeIncidents;
-        this.nearMisses = nearMisses;
-        this.safetyLevel = safetyLevel;
-        this.mine = mine;
-    }
 
     public Long getId() {
         return id;
@@ -49,14 +36,6 @@ public class SafetyData {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Mines getMine() {
-        return mine;
-    }
-
-    public void setMine(Mines mine) {
-        this.mine = mine;
     }
 
     public LocalDate getDateRecorded() {
@@ -89,5 +68,13 @@ public class SafetyData {
 
     public void setSafetyLevel(SafetyLevel safetyLevel) {
         this.safetyLevel = safetyLevel;
+    }
+
+    public Mines getMine() {
+        return mine;
+    }
+
+    public void setMine(Mines mine) {
+        this.mine = mine;
     }
 }

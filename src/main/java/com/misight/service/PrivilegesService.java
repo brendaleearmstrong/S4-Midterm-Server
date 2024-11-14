@@ -2,7 +2,7 @@ package com.misight.service;
 
 import com.misight.model.Privileges;
 import com.misight.repository.PrivilegesRepo;
-import com.misight.exception.ResourceNotFoundException;
+import com.misight.model.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

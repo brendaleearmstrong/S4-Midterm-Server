@@ -1,7 +1,7 @@
 package com.misight.service;
 
 import com.misight.model.User;
-import com.misight.exception.ResourceNotFoundException;
+import com.misight.model.exception.ResourceNotFoundException;
 import com.misight.repository.UserRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
