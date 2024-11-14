@@ -4,57 +4,65 @@ import com.misight.model.Pollutants;
 import com.misight.repository.PollutantsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import jakarta.transaction.Transactional;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional
 public class PollutantsService {
-    private final PollutantsRepo repo;
+    private final PollutantsRepo pollutantsRepo;
 
     @Autowired
-    public PollutantsService(PollutantsRepo repo) {
-        this.repo = repo;
+    public PollutantsService(PollutantsRepo pollutantsRepo) {
+        this.pollutantsRepo = pollutantsRepo;
     }
 
     public List<Pollutants> getAllPollutants() {
-        return repo.findAll();
+        return pollutantsRepo.findAll();
     }
 
     public Optional<Pollutants> getPollutantById(Long id) {
-        return repo.findById(id);
-    }
-
-    public List<Pollutants> getPollutantsByName(String name) {
-        return repo.findByNameIgnoreCase(name);
+        return pollutantsRepo.findById(id);
     }
 
     public List<Pollutants> getPollutantsByCategory(String category) {
-        return repo.findByCategory(category);
+        return pollutantsRepo.findByCategory(category);
     }
 
     public Pollutants createPollutant(Pollutants pollutant) {
-        if (repo.existsByName(pollutant.getName())) {
-            throw new IllegalArgumentException("Pollutant with name " + pollutant.getName() + " already exists");
+        if (pollutantsRepo.existsByName(pollutant.getName())) {
+            throw new IllegalArgumentException("Pollutant already exists");
         }
-        return repo.save(pollutant);
+        return pollutantsRepo.save(pollutant);
     }
 
-    public Optional<Pollutants> updatePollutant(Long id, Pollutants pollutant) {
-        if (!repo.existsById(id)) {
-            return Optional.empty();
-        }
-        pollutant.setId(id);
-        return Optional.of(repo.save(pollutant));
+    public Optional<Pollutants> updatePollutant(Long id, Pollutants pollutantDetails) {
+        return pollutantsRepo.findById(id)
+                .map(existingPollutant -> {
+                    if (!existingPollutant.getName().equals(pollutantDetails.getName()) &&
+                            pollutantsRepo.existsByName(pollutantDetails.getName())) {
+                        throw new IllegalArgumentException("Pollutant name already exists");
+                    }
+                    existingPollutant.setName(pollutantDetails.getName());
+                    existingPollutant.setCategory(pollutantDetails.getCategory());
+                    existingPollutant.setUnit(pollutantDetails.getUnit());
+                    existingPollutant.setBenchmarkValue(pollutantDetails.getBenchmarkValue());
+                    existingPollutant.setBenchmarkType(pollutantDetails.getBenchmarkType());
+                    return pollutantsRepo.save(existingPollutant);
+                });
     }
 
     public boolean deletePollutant(Long id) {
-        if (!repo.existsById(id)) {
-            return false;
-        }
-        repo.deleteById(id);
-        return true;
+        return pollutantsRepo.findById(id)
+                .map(pollutant -> {
+                    pollutantsRepo.delete(pollutant);
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    public List<Pollutants> searchPollutants(String name) {
+        return pollutantsRepo.findByNameContaining(name);
     }
 }

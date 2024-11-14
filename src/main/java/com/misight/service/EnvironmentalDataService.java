@@ -12,51 +12,59 @@ import java.util.Optional;
 @Service
 @Transactional
 public class EnvironmentalDataService {
-
-    private final EnvironmentalDataRepo repo;
+    private final EnvironmentalDataRepo environmentalDataRepo;
 
     @Autowired
-    public EnvironmentalDataService(EnvironmentalDataRepo repo) {
-        this.repo = repo;
+    public EnvironmentalDataService(EnvironmentalDataRepo environmentalDataRepo) {
+        this.environmentalDataRepo = environmentalDataRepo;
     }
 
-    public List<EnvironmentalData> getAllData() {
-        return repo.findAll();
+    public List<EnvironmentalData> getAllEnvironmentalData() {
+        return environmentalDataRepo.findAll();
     }
 
-    public Optional<EnvironmentalData> getDataById(Long id) {
-        return repo.findById(id);
+    public Optional<EnvironmentalData> getEnvironmentalDataById(Long id) {
+        return environmentalDataRepo.findById(id);
     }
 
-    public List<EnvironmentalData> getDataByStation(Long stationId) {
-        return repo.findByMonitoringStationId(stationId);
+    public List<EnvironmentalData> getEnvironmentalDataByMine(Long mineId) {
+        return environmentalDataRepo.findByMineId(mineId);
     }
 
-    public List<EnvironmentalData> getDataByMine(Long mineId) {
-        return repo.findByMineId(mineId);
+    public List<EnvironmentalData> getEnvironmentalDataByStation(Long stationId) {
+        return environmentalDataRepo.findByMonitoringStationId(stationId);
     }
 
-    public List<EnvironmentalData> getDataByDateRange(LocalDateTime start, LocalDateTime end) {
-        return repo.findByMeasurementDateBetween(start, end);
+    public List<EnvironmentalData> getEnvironmentalDataByDateRange(LocalDateTime start, LocalDateTime end) {
+        return environmentalDataRepo.findByMeasurementDateBetween(start, end);
     }
 
-    public EnvironmentalData createData(EnvironmentalData data) {
-        return repo.save(data);
+    public List<EnvironmentalData> getEnvironmentalDataByMineAndDateRange(Long mineId, LocalDateTime start, LocalDateTime end) {
+        return environmentalDataRepo.findByMineIdAndDateRange(mineId, start, end);
     }
 
-    public Optional<EnvironmentalData> updateData(Long id, EnvironmentalData data) {
-        if (!repo.existsById(id)) {
-            return Optional.empty();
-        }
-        data.setId(id);
-        return Optional.of(repo.save(data));
+    public EnvironmentalData createEnvironmentalData(EnvironmentalData environmentalData) {
+        return environmentalDataRepo.save(environmentalData);
     }
 
-    public boolean deleteData(Long id) {
-        if (!repo.existsById(id)) {
-            return false;
-        }
-        repo.deleteById(id);
-        return true;
+    public Optional<EnvironmentalData> updateEnvironmentalData(Long id, EnvironmentalData dataDetails) {
+        return environmentalDataRepo.findById(id)
+                .map(existingData -> {
+                    existingData.setMeasuredValue(dataDetails.getMeasuredValue());
+                    existingData.setMeasurementDate(dataDetails.getMeasurementDate());
+                    existingData.setNotes(dataDetails.getNotes());
+                    existingData.setPollutant(dataDetails.getPollutant());
+                    existingData.setMonitoringStation(dataDetails.getMonitoringStation());
+                    return environmentalDataRepo.save(existingData);
+                });
+    }
+
+    public boolean deleteEnvironmentalData(Long id) {
+        return environmentalDataRepo.findById(id)
+                .map(data -> {
+                    environmentalDataRepo.delete(data);
+                    return true;
+                })
+                .orElse(false);
     }
 }

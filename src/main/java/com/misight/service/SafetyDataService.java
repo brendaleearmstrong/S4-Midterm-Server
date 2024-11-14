@@ -1,25 +1,20 @@
 package com.misight.service;
 
 import com.misight.model.SafetyData;
-import com.misight.model.Mines;
-import com.misight.exception.ResourceNotFoundException;
 import com.misight.repository.SafetyDataRepo;
 import com.misight.repository.MinesRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class SafetyDataService {
-
     private final SafetyDataRepo safetyDataRepo;
     private final MinesRepo minesRepo;
-    private static final Logger logger = LoggerFactory.getLogger(SafetyDataService.class);
 
     @Autowired
     public SafetyDataService(SafetyDataRepo safetyDataRepo, MinesRepo minesRepo) {
@@ -27,46 +22,47 @@ public class SafetyDataService {
         this.minesRepo = minesRepo;
     }
 
-    public SafetyData createSafetyData(Long mineId, SafetyData safetyData) {
-        try {
-            Mines mine = minesRepo.findById(mineId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Mine not found with ID: " + mineId));
-            safetyData.setMine(mine);
-            SafetyData savedData = safetyDataRepo.save(safetyData);
-            logger.debug("Successfully saved SafetyData: {}", savedData);
-            return savedData;
-        } catch (Exception e) {
-            logger.error("Error saving SafetyData for Mine ID {}: {}", mineId, e.getMessage());
-            throw e;
-        }
-    }
-
-    public SafetyData getSafetyDataById(Long id) {
-        return safetyDataRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Safety data not found with ID: " + id));
-    }
-
     public List<SafetyData> getAllSafetyData() {
         return safetyDataRepo.findAll();
+    }
+
+    public Optional<SafetyData> getSafetyDataById(Long id) {
+        return safetyDataRepo.findById(id);
     }
 
     public List<SafetyData> getSafetyDataByMine(Long mineId) {
         return safetyDataRepo.findByMineId(mineId);
     }
 
-    public SafetyData updateSafetyData(Long id, SafetyData safetyDataDetails) {
-        SafetyData safetyData = getSafetyDataById(id);
-        safetyData.setDateRecorded(safetyDataDetails.getDateRecorded());
-        safetyData.setLostTimeIncidents(safetyDataDetails.getLostTimeIncidents());
-        safetyData.setNearMisses(safetyDataDetails.getNearMisses());
-        safetyData.setSafetyLevel(safetyDataDetails.getSafetyLevel());
+    public List<SafetyData> getSafetyDataByDateRange(LocalDate startDate, LocalDate endDate) {
+        return safetyDataRepo.findByDateRecordedBetween(startDate, endDate);
+    }
+
+    public List<SafetyData> getSafetyDataByMineAndDateRange(Long mineId, LocalDate startDate, LocalDate endDate) {
+        return safetyDataRepo.findByMineIdAndDateRange(mineId, startDate, endDate);
+    }
+
+    public SafetyData createSafetyData(SafetyData safetyData) {
         return safetyDataRepo.save(safetyData);
     }
 
-    public void deleteSafetyData(Long id) {
-        if (!safetyDataRepo.existsById(id)) {
-            throw new ResourceNotFoundException("Safety data not found with ID: " + id);
-        }
-        safetyDataRepo.deleteById(id);
+    public Optional<SafetyData> updateSafetyData(Long id, SafetyData safetyDataDetails) {
+        return safetyDataRepo.findById(id)
+                .map(existingData -> {
+                    existingData.setDateRecorded(safetyDataDetails.getDateRecorded());
+                    existingData.setLostTimeIncidents(safetyDataDetails.getLostTimeIncidents());
+                    existingData.setNearMisses(safetyDataDetails.getNearMisses());
+                    existingData.setSafetyLevel(safetyDataDetails.getSafetyLevel());
+                    return safetyDataRepo.save(existingData);
+                });
+    }
+
+    public boolean deleteSafetyData(Long id) {
+        return safetyDataRepo.findById(id)
+                .map(data -> {
+                    safetyDataRepo.delete(data);
+                    return true;
+                })
+                .orElse(false);
     }
 }

@@ -1,77 +1,54 @@
 package com.misight.service;
 
 import com.misight.model.MonitoringStations;
-import com.misight.model.Pollutants;
 import com.misight.repository.MonitoringStationsRepo;
-import com.misight.repository.PollutantsRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class MonitoringStationsService {
 
-    @Autowired
-    private MonitoringStationsRepo monitoringStationsRepo;
+    private final MonitoringStationsRepo monitoringStationsRepo;
 
     @Autowired
-    private PollutantsRepo pollutantsRepo;
-
-    public MonitoringStations createStation(MonitoringStations station) {
-        return monitoringStationsRepo.save(station);
+    public MonitoringStationsService(MonitoringStationsRepo monitoringStationsRepo) {
+        this.monitoringStationsRepo = monitoringStationsRepo;
     }
 
     public List<MonitoringStations> getAllStations() {
         return monitoringStationsRepo.findAll();
     }
 
-    public MonitoringStations getStationById(Long id) {
-        return monitoringStationsRepo.findById(id).orElse(null);
+    public Optional<MonitoringStations> getStationById(Long id) {
+        return monitoringStationsRepo.findById(id);
     }
 
-    public MonitoringStations updateStation(Long id, MonitoringStations stationDetails) {
-        Optional<MonitoringStations> station = monitoringStationsRepo.findById(id);
-        if (station.isPresent()) {
-            MonitoringStations existingStation = station.get();
-            existingStation.setLocation(stationDetails.getLocation());
-            existingStation.setProvince(stationDetails.getProvince());
-            existingStation.setPollutants(stationDetails.getPollutants());
-            return monitoringStationsRepo.save(existingStation);
+    public MonitoringStations createStation(MonitoringStations station) {
+        return monitoringStationsRepo.save(station);
+    }
+
+    public Optional<MonitoringStations> updateStation(Long id, MonitoringStations stationDetails) {
+        Optional<MonitoringStations> existingStation = monitoringStationsRepo.findById(id);
+
+        if (existingStation.isPresent()) {
+            MonitoringStations station = existingStation.get();
+            station.setLocation(stationDetails.getLocation());
+            station.setProvince(stationDetails.getProvince());
+            station.setPollutants(stationDetails.getPollutants());
+            return Optional.of(monitoringStationsRepo.save(station));
         }
-        return null;
+        return Optional.empty();
     }
 
-    public String deleteStation(Long id) {
+    public boolean deleteStation(Long id) {
         if (monitoringStationsRepo.existsById(id)) {
             monitoringStationsRepo.deleteById(id);
-            return "Monitoring station deleted successfully.";
+            return true;
         }
-        return "Monitoring station not found.";
-    }
-
-    public List<MonitoringStations> getStationsByProvince(Long provinceId) {
-        return monitoringStationsRepo.findByProvinceId(provinceId);
-    }
-
-    public List<MonitoringStations> getStationsByLocation(String location) {
-        return monitoringStationsRepo.findByLocation(location);
-    }
-
-    public MonitoringStations updateStationPollutants(Long stationId, List<Long> pollutantIds) {
-        Optional<MonitoringStations> station = monitoringStationsRepo.findById(stationId);
-        if (station.isPresent()) {
-            List<Pollutants> pollutants = pollutantsRepo.findAllById(pollutantIds);
-            MonitoringStations updatedStation = station.get();
-            updatedStation.setPollutants(pollutants);
-            return monitoringStationsRepo.save(updatedStation);
-        }
-        return null;
-    }
-
-    public List<Pollutants> getStationPollutants(Long stationId) {
-        Optional<MonitoringStations> station = monitoringStationsRepo.findById(stationId);
-        return station.map(MonitoringStations::getPollutants).orElse(null);
+        return false;
     }
 }

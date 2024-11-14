@@ -1,5 +1,6 @@
 package com.misight.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -11,65 +12,94 @@ public class EnvironmentalData {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "pollutant_id", nullable = false)
+    @JoinColumn(name = "pollutant_id")
+    @JsonIgnoreProperties({"measurements", "monitoringStations"})
     private Pollutants pollutant;
 
     @ManyToOne
-    @JoinColumn(name = "station_id", nullable = false)
+    @JoinColumn(name = "station_id")
+    @JsonIgnoreProperties({"measurements", "pollutants", "province"})
     private MonitoringStations monitoringStation;
 
     @ManyToOne
-    @JoinColumn(name = "mine_id", nullable = false)
+    @JoinColumn(name = "mine_id")
+    @JsonIgnoreProperties({"environmentalData", "safetyData", "minerals", "province"})
     private Mines mine;
 
-    @Column(name = "measured_value", nullable = false)
+    @Column(nullable = false)
     private Double measuredValue;
 
-    @Column(name = "measurement_date", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime measurementDate;
 
     private String notes;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
+    // Constructors
     public EnvironmentalData() {}
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+    public EnvironmentalData(Pollutants pollutant, MonitoringStations monitoringStation,
+                             Mines mine, Double measuredValue, LocalDateTime measurementDate) {
+        this.pollutant = pollutant;
+        this.monitoringStation = monitoringStation;
+        this.mine = mine;
+        this.measuredValue = measuredValue;
+        this.measurementDate = measurementDate;
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+    // Getters and Setters
+    public Long getId() {
+        return id;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Pollutants getPollutant() { return pollutant; }
-    public void setPollutant(Pollutants pollutant) { this.pollutant = pollutant; }
+    public Pollutants getPollutant() {
+        return pollutant;
+    }
 
-    public MonitoringStations getMonitoringStation() { return monitoringStation; }
-    public void setMonitoringStation(MonitoringStations station) { this.monitoringStation = station; }
+    public void setPollutant(Pollutants pollutant) {
+        this.pollutant = pollutant;
+    }
 
-    public Mines getMine() { return mine; }
-    public void setMine(Mines mine) { this.mine = mine; }
+    public MonitoringStations getMonitoringStation() {
+        return monitoringStation;
+    }
 
-    public Double getMeasuredValue() { return measuredValue; }
-    public void setMeasuredValue(Double value) { this.measuredValue = value; }
+    public void setMonitoringStation(MonitoringStations monitoringStation) {
+        this.monitoringStation = monitoringStation;
+    }
 
-    public LocalDateTime getMeasurementDate() { return measurementDate; }
-    public void setMeasurementDate(LocalDateTime date) { this.measurementDate = date; }
+    public Mines getMine() {
+        return mine;
+    }
 
-    public String getNotes() { return notes; }
-    public void setNotes(String notes) { this.notes = notes; }
+    public void setMine(Mines mine) {
+        this.mine = mine;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public Double getMeasuredValue() {
+        return measuredValue;
+    }
+
+    public void setMeasuredValue(Double measuredValue) {
+        this.measuredValue = measuredValue;
+    }
+
+    public LocalDateTime getMeasurementDate() {
+        return measurementDate;
+    }
+
+    public void setMeasurementDate(LocalDateTime measurementDate) {
+        this.measurementDate = measurementDate;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 }

@@ -5,58 +5,65 @@ import com.misight.service.PollutantsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/pollutants")
+@CrossOrigin(origins = "*")
 public class PollutantsController {
+    private final PollutantsService pollutantsService;
+
     @Autowired
-    private PollutantsService service;
+    public PollutantsController(PollutantsService pollutantsService) {
+        this.pollutantsService = pollutantsService;
+    }
 
     @GetMapping
-    public List<Pollutants> getAllPollutants() {
-        return service.getAllPollutants();
+    public ResponseEntity<List<Pollutants>> getAllPollutants() {
+        return ResponseEntity.ok(pollutantsService.getAllPollutants());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Pollutants> getPollutantById(@PathVariable Long id) {
-        return service.getPollutantById(id)
+        return pollutantsService.getPollutantById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/category/{category}")
-    public List<Pollutants> getPollutantsByCategory(@PathVariable String category) {
-        return service.getPollutantsByCategory(category);
+    public ResponseEntity<List<Pollutants>> getPollutantsByCategory(@PathVariable String category) {
+        return ResponseEntity.ok(pollutantsService.getPollutantsByCategory(category));
     }
 
-    @GetMapping("/name/{name}")
-    public List<Pollutants> getPollutantsByName(@PathVariable String name) {
-        return service.getPollutantsByName(name);
+    @GetMapping("/search")
+    public ResponseEntity<List<Pollutants>> searchPollutants(@RequestParam String name) {
+        return ResponseEntity.ok(pollutantsService.searchPollutants(name));
     }
 
     @PostMapping
     public ResponseEntity<?> createPollutant(@RequestBody Pollutants pollutant) {
         try {
-            Pollutants created = service.createPollutant(pollutant);
-            return ResponseEntity.ok(created);
+            return ResponseEntity.ok(pollutantsService.createPollutant(pollutant));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Pollutants> updatePollutant(@PathVariable Long id, @RequestBody Pollutants pollutant) {
-        return service.updatePollutant(id, pollutant)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> updatePollutant(@PathVariable Long id, @RequestBody Pollutants pollutant) {
+        try {
+            return pollutantsService.updatePollutant(id, pollutant)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePollutant(@PathVariable Long id) {
-        if (service.deletePollutant(id)) {
-            return ResponseEntity.noContent().build();
+        if (pollutantsService.deletePollutant(id)) {
+            return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
     }

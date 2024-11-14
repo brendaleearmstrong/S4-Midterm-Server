@@ -1,5 +1,6 @@
 package com.misight.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -7,32 +8,40 @@ import java.util.Set;
 @Entity
 @Table(name = "mines")
 public class Mines {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String name;
+
+    @Column(nullable = false)
     private String company;
+
+    @Column(nullable = false)
     private String location;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "province_id")
+    @JoinColumn(name = "province_id", nullable = false)
+    @JsonIgnoreProperties({"mines", "monitoringStations"})
     private Provinces province;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "mine_minerals",
             joinColumns = @JoinColumn(name = "mine_id"),
             inverseJoinColumns = @JoinColumn(name = "mineral_id")
     )
+    @JsonIgnoreProperties("mines")
     private Set<Minerals> minerals = new HashSet<>();
 
-    @OneToMany(mappedBy = "mine")
-    private Set<EnvironmentalData> environmentalData = new HashSet<>();
-
-    @OneToMany(mappedBy = "mine")
+    @OneToMany(mappedBy = "mine", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("mine")
     private Set<SafetyData> safetyData = new HashSet<>();
+
+    @OneToMany(mappedBy = "mine", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("mine")
+    private Set<EnvironmentalData> environmentalData = new HashSet<>();
 
     public Mines() {}
 
@@ -88,15 +97,10 @@ public class Mines {
     }
 
     public void setMinerals(Set<Minerals> minerals) {
-        this.minerals = minerals;
-    }
-
-    public Set<EnvironmentalData> getEnvironmentalData() {
-        return environmentalData;
-    }
-
-    public void setEnvironmentalData(Set<EnvironmentalData> environmentalData) {
-        this.environmentalData = environmentalData;
+        this.minerals.clear();
+        if (minerals != null) {
+            this.minerals.addAll(minerals);
+        }
     }
 
     public Set<SafetyData> getSafetyData() {
@@ -104,6 +108,52 @@ public class Mines {
     }
 
     public void setSafetyData(Set<SafetyData> safetyData) {
-        this.safetyData = safetyData;
+        this.safetyData.clear();
+        if (safetyData != null) {
+            this.safetyData.addAll(safetyData);
+            this.safetyData.forEach(data -> data.setMine(this));
+        }
+    }
+
+    public Set<EnvironmentalData> getEnvironmentalData() {
+        return environmentalData;
+    }
+
+    public void setEnvironmentalData(Set<EnvironmentalData> environmentalData) {
+        this.environmentalData.clear();
+        if (environmentalData != null) {
+            this.environmentalData.addAll(environmentalData);
+            this.environmentalData.forEach(data -> data.setMine(this));
+        }
+    }
+
+    public void addMineral(Minerals mineral) {
+        minerals.add(mineral);
+        mineral.getMines().add(this);
+    }
+
+    public void removeMineral(Minerals mineral) {
+        minerals.remove(mineral);
+        mineral.getMines().remove(this);
+    }
+
+    public void addSafetyData(SafetyData data) {
+        safetyData.add(data);
+        data.setMine(this);
+    }
+
+    public void removeSafetyData(SafetyData data) {
+        safetyData.remove(data);
+        data.setMine(null);
+    }
+
+    public void addEnvironmentalData(EnvironmentalData data) {
+        environmentalData.add(data);
+        data.setMine(this);
+    }
+
+    public void removeEnvironmentalData(EnvironmentalData data) {
+        environmentalData.remove(data);
+        data.setMine(null);
     }
 }
