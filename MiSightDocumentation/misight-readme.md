@@ -3,7 +3,7 @@
 ## Overview Summary
 MiSight is an enterprise-grade mine data management system designed to streamline the tracking of minerals, mine projects, environmental metrics, and safety standards. The system provides comprehensive tools for monitoring air quality, safety metrics, and operational data through a Spring Boot REST API backend and a Java console client interface.
 
-rawing from my experience as Principal Advisor of Communications at a major iron ore mining operation in Labrador, where I was responsible for collaborating with environmental, safety, and operations teams to compile internal and external reports, I witnessed firsthand the daily struggles of managing critical operational data. The countless hours spent manually collecting environmental data, coordinating safety reports, and responding to community concerns about dust levels highlighted a critical industry need.
+Drawing from my experience as Principal Advisor of Communications at a major iron ore mining operation in Labrador, where I was responsible for collaborating with environmental, safety, and operations teams to compile internal and external reports, I witnessed firsthand the daily struggles of managing critical operational data. The countless hours spent manually collecting environmental data, coordinating safety reports, and responding to community concerns about dust levels highlighted a critical industry need.
 
 Through my transition to software development at Keyin College, I recognized the opportunity to transform these challenges into a digital solution. MiSight was born from this unique perspective, designed to transform fragmented data collection into a streamlined, efficient system that serves all stakeholders.
 
@@ -118,7 +118,7 @@ safety_data -> mines (many-to-one)
 user_privileges -> users, privileges (many-to-many junction)
 ```
 
-## API Endpoints
+## Example API Endpoints (Not all API endpoints are listed)
 
 ### Users
 ```
