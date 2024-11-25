@@ -1,11 +1,12 @@
 package com.misight.controller;
 
 import com.misight.model.Mines;
+import com.misight.model.Minerals;
 import com.misight.service.MinesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,13 @@ public class MinesController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/{id}/minerals")
+    public ResponseEntity<List<Minerals>> getMineMinerals(@PathVariable Long id) {
+        return minesService.getMineWithMinerals(id)
+                .map(mine -> ResponseEntity.ok(mine.getMinerals().stream().toList()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<Mines> createMine(@RequestBody Mines mine) {
         return ResponseEntity.ok(minesService.createMine(mine));
@@ -52,6 +60,40 @@ public class MinesController {
         return minesService.updateMine(id, mine)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{mineId}/minerals/{mineralId}")
+    public ResponseEntity<String> addMineralToMine(
+            @PathVariable Long mineId,
+            @PathVariable Long mineralId) {
+        try {
+            boolean added = minesService.addMineralToMine(mineId, mineralId);
+            if (added) {
+                return ResponseEntity.ok("Mineral successfully added to mine");
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error adding mineral to mine: " + e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{mineId}/minerals/{mineralId}")
+    public ResponseEntity<String> removeMineralFromMine(
+            @PathVariable Long mineId,
+            @PathVariable Long mineralId) {
+        try {
+            boolean removed = minesService.removeMineralFromMine(mineId, mineralId);
+            if (removed) {
+                return ResponseEntity.ok("Mineral successfully removed from mine");
+            }
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error removing mineral from mine: " + e.getMessage());
+        }
     }
 
     @PatchMapping("/{id}")
@@ -69,4 +111,3 @@ public class MinesController {
         return ResponseEntity.notFound().build();
     }
 }
-
